@@ -1,0 +1,188 @@
+{
+  "tickets (POST /v1/tickets bodies + assigned id)": [
+    {
+      "idempotency_key": "ops-demo:1:EMERGENCY",
+      "call_id": "ops-demo",
+      "type": "EMERGENCY",
+      "priority": "P1",
+      "priority_reason": "R-SAFETY: Safety, medical or harassment statement (medical lexicon, matched 'behosh')",
+      "department": "emergency",
+      "summary": "Medical emergency reported by caller: Hostel mein ek ladka behosh ho gaya hai",
+      "collected_fields": {},
+      "caller_number": "+919000000003",
+      "callback_number": null,
+      "callback_requested": false,
+      "transcript_excerpt": "Caller: Hostel mein ek ladka behosh ho gaya hai",
+      "brief": "EMERGENCY (medical): Hostel mein ek ladka behosh ho gaya hai. Caller on line.",
+      "ticket_id": "EM-1001",
+      "status": "open",
+      "notes": [],
+      "assignee": null
+    },
+    {
+      "idempotency_key": "ops-demo:2:HUMAN_REQUEST",
+      "call_id": "ops-demo",
+      "type": "HUMAN_REQUEST",
+      "priority": "P3",
+      "priority_reason": "R-HUMAN: Caller asked for a person",
+      "department": "hostel",
+      "summary": "Caller asked to speak to a person.",
+      "collected_fields": {},
+      "caller_number": "+919000000003",
+      "callback_number": null,
+      "callback_requested": false,
+      "transcript_excerpt": "Caller: Hostel mein ek ladka behosh ho gaya hai | Agent: Main aapko turant college ke emergency contact se jod raha hoon. Agar jaan ka khatra hai to 1 1 2 par bhi call karein. | Caller: mujhe kisi insaan se baat karni hai",
+      "brief": "Caller asked for a human; topic: mujhe kisi insaan se baat karni hai.",
+      "ticket_id": "HS-1002",
+      "status": "open",
+      "notes": [],
+      "assignee": null
+    }
+  ],
+  "sms (POST /v1/notifications/sms bodies)": [
+    {
+      "idempotency_key": "ops-demo:staff_alert:+910000000901",
+      "to_number": "+910000000901",
+      "template_id": "staff_alert",
+      "vars": {
+        "ticket_id": "EM-1001",
+        "summary": "Medical emergency reported on a live call"
+      },
+      "consent": "staff",
+      "call_id": "ops-demo",
+      "ticket_id": "EM-1001"
+    },
+    {
+      "idempotency_key": "ops-demo:staff_alert:+910000000902",
+      "to_number": "+910000000902",
+      "template_id": "staff_alert",
+      "vars": {
+        "ticket_id": "EM-1001",
+        "summary": "Medical emergency reported on a live call"
+      },
+      "consent": "staff",
+      "call_id": "ops-demo",
+      "ticket_id": "EM-1001"
+    }
+  ],
+  "ticket events (POST /v1/tickets/{id}/events)": [
+    {
+      "ticket_id": "EM-1001",
+      "kind": "transfer_attempted",
+      "payload": {
+        "to": "+910000000900"
+      },
+      "actor": "runtime",
+      "at": "2026-11-01T18:50:39.647143+05:30"
+    },
+    {
+      "ticket_id": "EM-1001",
+      "kind": "transfer_connected",
+      "payload": {},
+      "actor": "runtime",
+      "at": "2026-11-01T18:50:39.647143+05:30"
+    },
+    {
+      "ticket_id": "HS-1002",
+      "kind": "transfer_attempted",
+      "payload": {
+        "to": "+910000000301"
+      },
+      "actor": "runtime",
+      "at": "2026-11-01T18:50:39.647143+05:30"
+    },
+    {
+      "ticket_id": "HS-1002",
+      "kind": "transfer_connected",
+      "payload": {},
+      "actor": "runtime",
+      "at": "2026-11-01T18:50:39.647143+05:30"
+    }
+  ],
+  "turn summaries (POST /v1/calls/{id}/turns)": [
+    {
+      "call_id": "ops-demo",
+      "turn_index": 1,
+      "path": "safety",
+      "tier": "escalate",
+      "lang": "hi",
+      "kb_ids": [],
+      "urgency": {
+        "event_type": "medical",
+        "minutes_to_event": null,
+        "blocked": false,
+        "safety_flag": true,
+        "affected": "other"
+      },
+      "priority": "P1",
+      "priority_reason": "R-SAFETY: Safety, medical or harassment statement (medical lexicon, matched 'behosh')",
+      "rule_id": "R-SAFETY",
+      "user_text_redacted": "Hostel mein ek ladka behosh ho gaya hai",
+      "assistant_text": "Main aapko turant college ke emergency contact se jod raha hoon. Agar jaan ka khatra hai to 1 1 2 par bhi call karein.",
+      "validator_flags": [],
+      "latency_ms": {
+        "safety": 1,
+        "brain_total": 0
+      },
+      "cached_tokens": null,
+      "created_at": "2026-11-01T18:50:39.647143+05:30"
+    },
+    {
+      "call_id": "ops-demo",
+      "turn_index": 2,
+      "path": "escalation",
+      "tier": "escalate",
+      "lang": "hi",
+      "kb_ids": [],
+      "urgency": null,
+      "priority": "P3",
+      "priority_reason": "R-HUMAN: Caller asked for a person",
+      "rule_id": "R-HUMAN",
+      "user_text_redacted": "mujhe kisi insaan se baat karni hai",
+      "assistant_text": "Bilkul. Maine ticket {{ticket_id}} bana diya hai aur aapko Hostel Office se jod raha hoon.",
+      "validator_flags": [],
+      "latency_ms": {
+        "safety": 0,
+        "brain_total": 0
+      },
+      "cached_tokens": null,
+      "created_at": "2026-11-01T18:50:39.647143+05:30"
+    }
+  ],
+  "dashboard SSE stream (/v1/stream)": [
+    {
+      "event": "call.started",
+      "ticket_id": null,
+      "priority": null
+    },
+    {
+      "event": "ticket.created",
+      "ticket_id": "EM-1001",
+      "priority": "P1"
+    },
+    {
+      "event": "alert.p1",
+      "ticket_id": "EM-1001",
+      "priority": "P1"
+    },
+    {
+      "event": "call.turn",
+      "ticket_id": null,
+      "priority": "P1"
+    },
+    {
+      "event": "ticket.created",
+      "ticket_id": "HS-1002",
+      "priority": "P3"
+    },
+    {
+      "event": "call.turn",
+      "ticket_id": null,
+      "priority": "P3"
+    }
+  ],
+  "dashboard row order (P1 first)": [
+    "EM-1001",
+    "HS-1002"
+  ]
+}

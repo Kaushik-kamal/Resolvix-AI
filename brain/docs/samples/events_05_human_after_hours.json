@@ -1,0 +1,74 @@
+[
+  {
+    "type": "meta",
+    "path": "escalation",
+    "tier": "escalate",
+    "lang": "hi",
+    "interruptable": false
+  },
+  {
+    "type": "action",
+    "action": {
+      "kind": "create_ticket",
+      "ticket": {
+        "idempotency_key": "s5:1:HUMAN_REQUEST",
+        "call_id": "s5",
+        "type": "HUMAN_REQUEST",
+        "priority": "P3",
+        "priority_reason": "R-HUMAN: Caller asked for a person",
+        "department": "helpdesk",
+        "summary": "Caller asked to speak to a person.",
+        "collected_fields": {},
+        "caller_number": "+919000000005",
+        "callback_number": "+919000000005",
+        "callback_requested": true,
+        "transcript_excerpt": "Caller: mujhe kisi insaan se baat karni hai",
+        "brief": "Caller asked for a human; topic: mujhe kisi insaan se baat karni hai."
+      }
+    },
+    "blocking": true
+  },
+  {
+    "type": "action",
+    "action": {
+      "kind": "send_sms",
+      "idempotency_key": "s5:ticket_created:+919000000005",
+      "to_number": "+919000000005",
+      "template_id": "ticket_created",
+      "vars": {
+        "ticket_id": "{{ticket_id}}",
+        "dept": "General Helpdesk"
+      },
+      "consent": "transactional"
+    },
+    "blocking": false
+  },
+  {
+    "type": "speech",
+    "text": "Bilkul. Maine ticket {{ticket_id}} bana diya hai. General Helpdesk abhi band hai, office khulte hi staff aapko call karega. SMS bhi bhej diya hai."
+  },
+  {
+    "type": "done",
+    "summary": {
+      "call_id": "s5",
+      "turn_index": 1,
+      "path": "escalation",
+      "tier": "escalate",
+      "lang": "hi",
+      "kb_ids": [],
+      "urgency": null,
+      "priority": "P3",
+      "priority_reason": "R-HUMAN: Caller asked for a person",
+      "rule_id": "R-HUMAN",
+      "user_text_redacted": "mujhe kisi insaan se baat karni hai",
+      "assistant_text": "Bilkul. Maine ticket {{ticket_id}} bana diya hai. General Helpdesk abhi band hai, office khulte hi staff aapko call karega. SMS bhi bhej diya hai.",
+      "validator_flags": [],
+      "latency_ms": {
+        "safety": 0,
+        "brain_total": 0
+      },
+      "cached_tokens": null,
+      "created_at": "2026-11-01T18:50:39.641189+05:30"
+    }
+  }
+]

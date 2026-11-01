@@ -1,0 +1,86 @@
+[
+  {
+    "type": "meta",
+    "path": "escalation",
+    "tier": "escalate",
+    "lang": "hi",
+    "interruptable": false
+  },
+  {
+    "type": "action",
+    "action": {
+      "kind": "create_ticket",
+      "ticket": {
+        "idempotency_key": "s7:2:KNOWLEDGE_GAP",
+        "call_id": "s7",
+        "type": "KNOWLEDGE_GAP",
+        "priority": "P3",
+        "priority_reason": "R-UNANSWERED: Question not covered by approved documents",
+        "department": "transport",
+        "summary": "Caller question not covered by approved documents: Noida sector 62 ke liye bus route kya hai?",
+        "collected_fields": {
+          "callback_number": "+919000000001"
+        },
+        "caller_number": "+919000000001",
+        "callback_number": "+919000000001",
+        "callback_requested": true,
+        "transcript_excerpt": "Caller: Noida sector 62 ke liye bus route kya hai? | Agent: Is baare mein mere paas pakki jaankari nahi hai. Kya main ticket bana doon taaki Transport aapko call kare? Isi number par call karein? | Caller: Noida sector 62 ke liye bus route kya hai?",
+        "brief": "Question not in KB: Noida sector 62 ke liye bus route kya hai?. Call back on the caller number."
+      }
+    },
+    "blocking": true
+  },
+  {
+    "type": "action",
+    "action": {
+      "kind": "log_gap",
+      "question": "Noida sector 62 ke liye bus route kya hai?",
+      "lang": "hi",
+      "department_guess": "transport"
+    },
+    "blocking": false
+  },
+  {
+    "type": "action",
+    "action": {
+      "kind": "send_sms",
+      "idempotency_key": "s7:ticket_created:+919000000001",
+      "to_number": "+919000000001",
+      "template_id": "ticket_created",
+      "vars": {
+        "ticket_id": "{{ticket_id}}",
+        "dept": "Transport"
+      },
+      "consent": "transactional"
+    },
+    "blocking": false
+  },
+  {
+    "type": "speech",
+    "text": "Theek hai, maine ticket bana diya hai. Aapka ticket number hai {{ticket_id}}. Transport aapko isi number par call karega."
+  },
+  {
+    "type": "done",
+    "summary": {
+      "call_id": "s7",
+      "turn_index": 2,
+      "path": "escalation",
+      "tier": "escalate",
+      "lang": "hi",
+      "kb_ids": [],
+      "urgency": null,
+      "priority": "P3",
+      "priority_reason": "R-UNANSWERED: Question not covered by approved documents",
+      "rule_id": "R-UNANSWERED",
+      "user_text_redacted": "haan isi number par call kar dena",
+      "assistant_text": "Theek hai, maine ticket bana diya hai. Aapka ticket number hai {{ticket_id}}. Transport aapko isi number par call karega.",
+      "validator_flags": [],
+      "latency_ms": {
+        "safety": 0,
+        "brain_total": 0
+      },
+      "cached_tokens": null,
+      "created_at": "2026-11-01T18:50:39.645144+05:30"
+    }
+  }
+]

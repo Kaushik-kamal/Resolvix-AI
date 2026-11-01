@@ -45,6 +45,13 @@ rules:
     department: from_topic_or_default
     action: ticket_and_gap
     reason: "Question not covered by approved documents"
+  - id: R-FALLBACK
+    when: {intent: system_failure}   # raised by the brain itself when the LLM/internal pipeline fails; never matched from caller text
+    priority: P3
+    ticket_type: SYSTEM_FAILURE
+    department: from_topic_or_default
+    action: ticket_and_callback
+    reason: "Agent could not answer because of a system failure"
   - id: R-ROUTINE
     when: {}
     priority: P4
@@ -52,10 +59,26 @@ rules:
     action: none
     reason: "Routine information"
 
-# Pre-LLM lexicon (runs first, < 5 ms). Romanised Hindi, Devanagari and English. Matching is case-insensitive.
+# Pre-LLM lexicon (runs first, < 5 ms). Romanised Hindi, Devanagari and English. Matching is case-insensitive and
+# token-based after normalisation (punctuation removed), so "behosh ho gaya!" matches "behosh".
+# Terms are deliberately recall-biased: a false alarm costs a staff call, a miss can cost a life. Review with staff.
 safety_lexicon:
-  medical: [ambulance, behosh, "बेहोश", unconscious, accident, bleeding, "khoon", heart attack, "saans nahi"]
-  harassment: [ragging, "रैगिंग", harass, "pareshan kar rahe", molest, "dhamki", "धमकी", threat]
-  self_harm: [suicide, "आत्महत्या", "khud ko maar", "jaan de", "mar jaunga", "mar jaungi"]
-  violence: [fight, "maar peet", "मारपीट", weapon, knife]
-human_request_lexicon: ["insaan se baat", "kisi se baat", human, "real person", operator, "staff se baat", "press 0"]
+  medical: [ambulance, "ambulance bulao", behosh, bayhosh, behos, "बेहोश", unconscious, faint, fainted, fainting,
+            accident, "एक्सीडेंट", "दुर्घटना", bleeding, "khoon", "खून", "heart attack", "dil ka daura", "दिल का दौरा",
+            "saans nahi", "सांस नहीं", "saans lene mein", "can't breathe", "cannot breathe", "not breathing",
+            "chot lag", "chot lagi", "चोट", seizure, "mirgi", "दौरा पड़", overdose, poison, "zeher", "जहर",
+            "medical emergency", "bahut khoon", "tabiyat bahut kharab", "sir se khoon"]
+  harassment: [ragging, "रैगिंग", harass, harassment, "harassed", "pareshan kar rahe", "pareshan kar raha", "परेशान कर रहे",
+               molest, molested, "chhed chhad", "छेड़छाड़", "dhamki", "धमकी", threat, threatening, stalking, stalker,
+               "blackmail", "ब्लैकमेल", "sexual", "yaun shoshan", "यौन उत्पीड़न"]
+  self_harm: [suicide, "सुसाइड", "आत्महत्या", "khud ko maar", "khud ko khatam", "jaan de", "jaan dene", "mar jaunga",
+              "mar jaungi", "मर जाऊंगा", "मर जाऊँगी", "marna chahta", "marna chahti", "end my life", "kill myself",
+              "khudkushi", "ख़ुदकुशी", "खुदकुशी", "zindagi khatam"]
+  violence: [fight, "maar peet", "marpeet", "मारपीट", weapon, knife, "chaku", "चाकू", gun, "pistol", "bandook", "बंदूक",
+             "attack", "hamla", "हमला", fire, "aag lag", "आग लग", "aag lagi", "blast", "dhamaka", "bomb", "बम"]
+human_request_lexicon: ["insaan se baat", "kisi se baat", "kisi insaan", human, "real person", operator, "staff se baat",
+                        "press 0", "someone from the college", "talk to a person", "talk to someone", "speak to someone",
+                        "speak to a person", "agent se baat", "adhikari se baat", "इंसान से बात", "किसी से बात",
+                        "स्टाफ से बात", "ऑपरेटर"]
+# Phrases that contain a lexicon word but are not a request for a person (checked before human_request_lexicon).
+human_request_exclusions: ["human resource", "human resources", "humanities", "human rights"]

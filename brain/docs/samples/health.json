@@ -1,0 +1,10 @@
+{
+  "status": "degraded",
+  "kb_version": "6f4da57b0bf8",
+  "llm": "ok",
+  "contract_version": "1.0.0",
+  "embedder": "lexical-hash-1024",
+  "sessions": 9,
+  "llm_mode": "mock",
+  "init_error": null
+}

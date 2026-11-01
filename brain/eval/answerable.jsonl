@@ -1,0 +1,45 @@
+{"text": "B.Tech second year ki semester fee kab tak jama karni hai?", "lang": "hinglish", "expected_kb_ids": ["FEE-001"], "must_contain": ["30 November"]}
+{"text": "What is the last date to pay the second year semester fee?", "lang": "en", "expected_kb_ids": ["FEE-001"], "must_contain": ["30 November"]}
+{"text": "semester fee ka deadline kya hai second year ka", "lang": "hinglish", "expected_kb_ids": ["FEE-001"], "must_contain": ["30 November"]}
+{"text": "fees jama karne ki aakhri tareekh batao", "lang": "hi", "expected_kb_ids": ["FEE-001"], "must_contain": ["30 November"]}
+{"text": "B.Tech 2nd year fee last date kab hai", "lang": "hinglish", "expected_kb_ids": ["FEE-001"], "must_contain": ["30 November"]}
+{"text": "Is there a late fine on fees and how much per day?", "lang": "en", "expected_kb_ids": ["FEE-002"], "must_contain": ["100"]}
+{"text": "late fee kitni lagti hai agar due date nikal jaye", "lang": "hi", "expected_kb_ids": ["FEE-002"], "must_contain": ["100"]}
+{"text": "fees late jama karun to fine kitna hai?", "lang": "hinglish", "expected_kb_ids": ["FEE-002"], "must_contain": ["100"]}
+{"text": "How much is the late fee fine per day?", "lang": "en", "expected_kb_ids": ["FEE-002"], "must_contain": ["100"]}
+{"text": "How do I pay my fees online?", "lang": "en", "expected_kb_ids": ["FEE-003"], "must_contain": ["ERP"]}
+{"text": "fees online kaise bharni hoti hai", "lang": "hi", "expected_kb_ids": ["FEE-003"], "must_contain": ["ERP"]}
+{"text": "fee payment ke liye kaunsa portal use karna hai aur receipt kab milti hai", "lang": "hinglish", "expected_kb_ids": ["FEE-003"], "must_contain": ["ERP"]}
+{"text": "When does the fee receipt appear in the portal?", "lang": "en", "expected_kb_ids": ["FEE-003"], "must_contain": ["one working day"]}
+{"text": "When do the end semester theory exams start?", "lang": "en", "expected_kb_ids": ["EXM-001"], "must_contain": ["8 December"]}
+{"text": "end semester exam kab se shuru honge", "lang": "hi", "expected_kb_ids": ["EXM-001"], "must_contain": ["8 December"]}
+{"text": "theory exams ki start date kya hai", "lang": "hinglish", "expected_kb_ids": ["EXM-001"], "must_contain": ["8 December"]}
+{"text": "semester ke paper kab se hain", "lang": "hi", "expected_kb_ids": ["EXM-001"], "must_contain": ["8 December"]}
+{"text": "exam ki date sheet kab se start hai theory ki", "lang": "hinglish", "expected_kb_ids": ["EXM-001"], "must_contain": ["8 December"]}
+{"text": "Where can I download my admit card?", "lang": "en", "expected_kb_ids": ["EXM-002"], "must_contain": ["ERP"]}
+{"text": "admit card kab milega aur kahan se", "lang": "hi", "expected_kb_ids": ["EXM-002"], "must_contain": ["ERP"]}
+{"text": "admit card exam se kitne din pehle available hota hai", "lang": "hinglish", "expected_kb_ids": ["EXM-002"], "must_contain": ["three days"]}
+{"text": "Where will the seating plan be displayed?", "lang": "en", "expected_kb_ids": ["EXM-003"], "must_contain": ["notice board"]}
+{"text": "exam ka seating plan kahan lagta hai", "lang": "hi", "expected_kb_ids": ["EXM-003"], "must_contain": ["notice board"]}
+{"text": "exam room kaise pata karun, seating plan kab lagta hai", "lang": "hinglish", "expected_kb_ids": ["EXM-003"], "must_contain": ["one day"]}
+{"text": "How do I apply for re-evaluation?", "lang": "en", "expected_kb_ids": ["EXM-004"], "must_contain": ["Exam Cell"]}
+{"text": "re-evaluation form kab milta hai result ke baad", "lang": "hi", "expected_kb_ids": ["EXM-004"], "must_contain": ["7"]}
+{"text": "re-evaluation ka form kitne din mein milega", "lang": "hinglish", "expected_kb_ids": ["EXM-004"], "must_contain": ["7"]}
+{"text": "What is the hostel fee for 2026-27?", "lang": "en", "expected_kb_ids": ["HST-001"], "must_contain": ["95,000"]}
+{"text": "hostel ki fees kitni hai ek saal ki", "lang": "hi", "expected_kb_ids": ["HST-001"], "must_contain": ["95,000"]}
+{"text": "hostel fee mess ke saath hai kya, twin sharing wali", "lang": "hinglish", "expected_kb_ids": ["HST-001"], "must_contain": ["mess"]}
+{"text": "How do I request a room change in the hostel?", "lang": "en", "expected_kb_ids": ["HST-002"], "must_contain": ["H-4"]}
+{"text": "room change karna hai, form kaunsa bharna hai", "lang": "hi", "expected_kb_ids": ["HST-002"], "must_contain": ["H-4"]}
+{"text": "hostel room change form kitne din mein jama karna hota hai", "lang": "hinglish", "expected_kb_ids": ["HST-002"], "must_contain": ["7"]}
+{"text": "What time do the hostel gates close?", "lang": "en", "expected_kb_ids": ["HST-003"], "must_contain": ["10 pm"]}
+{"text": "hostel ka gate raat ko kitne baje band hota hai", "lang": "hi", "expected_kb_ids": ["HST-003"], "must_contain": ["10"]}
+{"text": "weekend par hostel gate timing kya hai", "lang": "hinglish", "expected_kb_ids": ["HST-003"], "must_contain": ["11"]}
+{"text": "Until what time can I enter the hostel on weekends?", "lang": "en", "expected_kb_ids": ["HST-003"], "must_contain": ["11 pm"]}
+{"text": "What are the mess timings?", "lang": "en", "expected_kb_ids": ["HST-004"], "must_contain": ["7:30"]}
+{"text": "mess mein khana kitne baje milta hai", "lang": "hi", "expected_kb_ids": ["HST-004"], "must_contain": ["7:30"]}
+{"text": "lunch ka mess timing kya hai hostel mein", "lang": "hinglish", "expected_kb_ids": ["HST-004"], "must_contain": ["12:30"]}
+{"text": "When is dinner served in the hostel mess?", "lang": "en", "expected_kb_ids": ["HST-004"], "must_contain": ["7:30"]}
+{"text": "What are the college office timings?", "lang": "en", "expected_kb_ids": ["GEN-001"], "must_contain": ["9 am"]}
+{"text": "college office kab khulta hai aur kab band hota hai", "lang": "hi", "expected_kb_ids": ["GEN-001"], "must_contain": ["9"]}
+{"text": "saturday ko administrative office khula rehta hai kya", "lang": "hinglish", "expected_kb_ids": ["GEN-001"], "must_contain": ["Saturday"]}
+{"text": "Is the administrative office open on Saturday?", "lang": "en", "expected_kb_ids": ["GEN-001"], "must_contain": ["Saturday"]}

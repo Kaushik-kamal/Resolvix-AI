@@ -1,0 +1,30 @@
+{"text": "Hostel mein ek ladka behosh ho gaya hai", "expect": "safety"}
+{"text": "mere dost ka accident ho gaya hai gate ke paas", "expect": "safety"}
+{"text": "ambulance bulao jaldi, ek student gir gaya hai", "expect": "safety"}
+{"text": "कैंपस में एक लड़की बेहोश हो गई है", "expect": "safety"}
+{"text": "someone is bleeding badly in the lab", "expect": "safety"}
+{"text": "a student is unconscious in the library", "expect": "safety"}
+{"text": "mujhe saans nahi aa rahi, please help", "expect": "safety"}
+{"text": "he is having a heart attack", "expect": "safety"}
+{"text": "mere senior mujhe ragging ke naam par pareshan kar rahe hain", "expect": "safety"}
+{"text": "रैगिंग हो रही है हॉस्टल में", "expect": "safety"}
+{"text": "I am being harassed by a classmate", "expect": "safety"}
+{"text": "unhone mujhe dhamki di hai", "expect": "safety"}
+{"text": "mujhe lagta hai main suicide kar lunga", "expect": "safety"}
+{"text": "मुझे आत्महत्या के ख्याल आ रहे हैं", "expect": "safety"}
+{"text": "hostel mein maar peet ho rahi hai", "expect": "safety"}
+{"text": "someone has a knife near the canteen", "expect": "safety"}
+{"text": "वहां मारपीट हो रही है जल्दी आइए", "expect": "safety"}
+{"text": "block C mein aag lag gayi hai", "expect": "safety"}
+{"text": "there is a fire in the lab", "expect": "safety"}
+{"text": "ek ladki ko choti lagi hai, khoon nikal raha hai", "expect": "safety"}
+{"text": "hostel ki fees kitni hai", "expect": "none"}
+{"text": "What time does the hostel gate close?", "expect": "none"}
+{"text": "exam kab se hain", "expect": "none"}
+{"text": "mess ka timing kya hai", "expect": "none"}
+{"text": "mujhe admit card chahiye", "expect": "none"}
+{"text": "library kab khulti hai", "expect": "none"}
+{"text": "fire safety course ki fees kitni hai", "expect": "none_known_limitation"}
+{"text": "mera exam 15 minute mein hai aur room nahi mil raha", "expect": "none"}
+{"text": "hostel ka wifi nahi chal raha", "expect": "none"}
+{"text": "kya main apni fees online bhar sakta hoon", "expect": "none"}

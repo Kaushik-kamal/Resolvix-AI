@@ -1,0 +1,80 @@
+[
+  {
+    "type": "meta",
+    "path": "escalation",
+    "tier": "escalate",
+    "lang": "hi",
+    "interruptable": false
+  },
+  {
+    "type": "action",
+    "action": {
+      "kind": "create_ticket",
+      "ticket": {
+        "idempotency_key": "s2:2:URGENT",
+        "call_id": "s2",
+        "type": "URGENT",
+        "priority": "P1",
+        "priority_reason": "R-EXAM-60: Exam within 60 minutes and caller blocked (exam, in 15 min, caller blocked)",
+        "department": "exam_cell",
+        "summary": "Caller blocked: exam in 15 minutes. Paper: Data Structures.",
+        "collected_fields": {
+          "roll_no": "2400271549999",
+          "paper": "Data Structures"
+        },
+        "caller_number": "+919000000002",
+        "callback_number": null,
+        "callback_requested": false,
+        "transcript_excerpt": "Caller: Exam 15 minute mein hai, room nahi mil raha! | Agent: Ye urgent hai, main abhi madad karta hoon. Aapka roll number aur kaunsa paper hai, batayiye. | Caller: Roll number [REDACTED], paper Data Structures.",
+        "brief": "URGENT P1: exam in 15 min, caller blocked. Roll 2400271549999. Paper Data Structures."
+      }
+    },
+    "blocking": true
+  },
+  {
+    "type": "speech",
+    "text": "Ye urgent hai. Maine Examination Cell ke liye ticket {{ticket_id}} bana diya hai aur abhi aapko unse jod raha hoon. Line par bane rahiye."
+  },
+  {
+    "type": "action",
+    "action": {
+      "kind": "transfer",
+      "department": "exam_cell",
+      "to_number": "+910000000101",
+      "reason": "P1 exam within 15 minutes",
+      "brief": "URGENT P1: exam in 15 min, caller blocked. Roll 2400271549999. Paper Data Structures.",
+      "requires_ticket": true
+    },
+    "blocking": true
+  },
+  {
+    "type": "done",
+    "summary": {
+      "call_id": "s2",
+      "turn_index": 2,
+      "path": "escalation",
+      "tier": "escalate",
+      "lang": "hi",
+      "kb_ids": [],
+      "urgency": {
+        "event_type": "exam",
+        "minutes_to_event": 15,
+        "blocked": true,
+        "safety_flag": false,
+        "affected": null
+      },
+      "priority": "P1",
+      "priority_reason": "R-EXAM-60: Exam within 60 minutes and caller blocked (exam, in 15 min, caller blocked)",
+      "rule_id": "R-EXAM-60",
+      "user_text_redacted": "Roll number [REDACTED], paper Data Structures.",
+      "assistant_text": "Ye urgent hai. Maine Examination Cell ke liye ticket {{ticket_id}} bana diya hai aur abhi aapko unse jod raha hoon. Line par bane rahiye.",
+      "validator_flags": [],
+      "latency_ms": {
+        "safety": 0,
+        "brain_total": 0
+      },
+      "cached_tokens": null,
+      "created_at": "2026-11-01T18:50:39.639144+05:30"
+    }
+  }
+]

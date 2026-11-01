@@ -1,0 +1,44 @@
+[
+  {
+    "type": "meta",
+    "path": "faq",
+    "tier": "confident",
+    "lang": "hi",
+    "interruptable": true
+  },
+  {
+    "type": "speech",
+    "text": "B.Tech second year ki semester fee ki last date 30 November hai. Ye Fee Notice 2026-27 mein diya hai."
+  },
+  {
+    "type": "speech",
+    "text": "Kuch aur poochna hai?"
+  },
+  {
+    "type": "done",
+    "summary": {
+      "call_id": "s1",
+      "turn_index": 1,
+      "path": "faq",
+      "tier": "confident",
+      "lang": "hi",
+      "kb_ids": [
+        "FEE-001"
+      ],
+      "urgency": null,
+      "priority": "P4",
+      "priority_reason": null,
+      "rule_id": null,
+      "user_text_redacted": "fees kab tak jama karni hai",
+      "assistant_text": "B.Tech second year ki semester fee ki last date 30 November hai. Ye Fee Notice 2026-27 mein diya hai. Kuch aur poochna hai?",
+      "validator_flags": [],
+      "latency_ms": {
+        "safety": 0,
+        "faq": 0,
+        "brain_total": 1
+      },
+      "cached_tokens": null,
+      "created_at": "2026-11-01T18:50:39.637136+05:30"
+    }
+  }
+]
