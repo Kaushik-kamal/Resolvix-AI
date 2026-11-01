@@ -1,0 +1,65 @@
+{
+  "$defs": {
+    "Lang": {
+      "enum": [
+        "hi",
+        "en",
+        "hinglish"
+      ],
+      "title": "Lang",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "question": {
+      "title": "Question",
+      "type": "string"
+    },
+    "lang": {
+      "$ref": "#/$defs/Lang"
+    },
+    "department_guess": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Department Guess"
+    },
+    "call_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Call Id"
+    },
+    "ticket_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ticket Id"
+    }
+  },
+  "required": [
+    "question",
+    "lang"
+  ],
+  "title": "GapCreate",
+  "type": "object"
+}

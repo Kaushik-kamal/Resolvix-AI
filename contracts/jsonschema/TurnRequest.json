@@ -1,0 +1,77 @@
+{
+  "$defs": {
+    "ChatMessage": {
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "enum": [
+            "system",
+            "user",
+            "assistant"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "content": {
+          "title": "Content",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "content"
+      ],
+      "title": "ChatMessage",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "call_id": {
+      "title": "Call Id",
+      "type": "string"
+    },
+    "turn_index": {
+      "minimum": 0,
+      "title": "Turn Index",
+      "type": "integer"
+    },
+    "user_text": {
+      "title": "User Text",
+      "type": "string"
+    },
+    "history": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/ChatMessage"
+      },
+      "title": "History",
+      "type": "array"
+    },
+    "dtmf": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Dtmf"
+    },
+    "received_at": {
+      "format": "date-time",
+      "title": "Received At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "call_id",
+    "turn_index",
+    "user_text",
+    "received_at"
+  ],
+  "title": "TurnRequest",
+  "type": "object"
+}

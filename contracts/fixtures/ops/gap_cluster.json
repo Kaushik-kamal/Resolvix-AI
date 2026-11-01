@@ -1,0 +1,12 @@
+{
+  "cluster_id": "gc-3",
+  "label": "Bus routes",
+  "department": "transport",
+  "count": 7,
+  "examples": [
+    "Noida sector 62 bus route?",
+    "Indirapuram bus timing?"
+  ],
+  "last_seen": "2026-10-23T10:15:00+05:30",
+  "status": "needs_document"
+}

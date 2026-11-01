@@ -1,0 +1,183 @@
+{
+  "$defs": {
+    "Priority": {
+      "enum": [
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "title": "Priority",
+      "type": "string"
+    },
+    "TicketStatus": {
+      "enum": [
+        "open",
+        "in_progress",
+        "resolved",
+        "closed"
+      ],
+      "title": "TicketStatus",
+      "type": "string"
+    },
+    "TicketType": {
+      "enum": [
+        "EMERGENCY",
+        "URGENT",
+        "KNOWLEDGE_GAP",
+        "COMPLAINT",
+        "HUMAN_REQUEST",
+        "SYSTEM_FAILURE"
+      ],
+      "title": "TicketType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "ticket_id": {
+      "examples": [
+        "EX-1042"
+      ],
+      "pattern": "^[A-Z]{2}-\\d{4}$",
+      "title": "Ticket Id",
+      "type": "string"
+    },
+    "call_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Call Id"
+    },
+    "type": {
+      "$ref": "#/$defs/TicketType"
+    },
+    "priority": {
+      "$ref": "#/$defs/Priority"
+    },
+    "priority_reason": {
+      "title": "Priority Reason",
+      "type": "string"
+    },
+    "department": {
+      "title": "Department",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/TicketStatus",
+      "default": "open"
+    },
+    "summary": {
+      "title": "Summary",
+      "type": "string"
+    },
+    "collected_fields": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "default": {},
+      "title": "Collected Fields",
+      "type": "object"
+    },
+    "caller_number": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Caller Number"
+    },
+    "callback_number": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Callback Number"
+    },
+    "callback_requested": {
+      "default": false,
+      "title": "Callback Requested",
+      "type": "boolean"
+    },
+    "transcript_excerpt": {
+      "default": "",
+      "title": "Transcript Excerpt",
+      "type": "string"
+    },
+    "brief": {
+      "default": "",
+      "title": "Brief",
+      "type": "string"
+    },
+    "assignee": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Assignee"
+    },
+    "notes": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Notes",
+      "type": "array"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "updated_at": {
+      "format": "date-time",
+      "title": "Updated At",
+      "type": "string"
+    },
+    "resolved_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Resolved At"
+    }
+  },
+  "required": [
+    "ticket_id",
+    "type",
+    "priority",
+    "priority_reason",
+    "department",
+    "summary",
+    "created_at",
+    "updated_at"
+  ],
+  "title": "Ticket",
+  "type": "object"
+}

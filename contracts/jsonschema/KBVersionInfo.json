@@ -1,0 +1,44 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "kb_version": {
+      "description": "first 12 hex chars of sha256 of the compiled prefix",
+      "title": "Kb Version",
+      "type": "string"
+    },
+    "entry_count": {
+      "title": "Entry Count",
+      "type": "integer"
+    },
+    "faq_count": {
+      "title": "Faq Count",
+      "type": "integer"
+    },
+    "token_count": {
+      "title": "Token Count",
+      "type": "integer"
+    },
+    "activated_at": {
+      "format": "date-time",
+      "title": "Activated At",
+      "type": "string"
+    },
+    "warnings": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Warnings",
+      "type": "array"
+    }
+  },
+  "required": [
+    "kb_version",
+    "entry_count",
+    "faq_count",
+    "token_count",
+    "activated_at"
+  ],
+  "title": "KBVersionInfo",
+  "type": "object"
+}

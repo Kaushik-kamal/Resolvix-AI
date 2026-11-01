@@ -1,0 +1,19 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "ticket_id": {
+      "title": "Ticket Id",
+      "type": "string"
+    },
+    "created": {
+      "title": "Created",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "ticket_id",
+    "created"
+  ],
+  "title": "TicketCreated",
+  "type": "object"
+}

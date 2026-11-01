@@ -1,0 +1,10 @@
+{
+  "error": {
+    "code": "validation_error",
+    "message": "priority must be one of P1..P4",
+    "retryable": false,
+    "details": {
+      "field": "priority"
+    }
+  }
+}

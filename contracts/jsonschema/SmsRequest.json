@@ -1,0 +1,73 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "idempotency_key": {
+      "title": "Idempotency Key",
+      "type": "string"
+    },
+    "to_number": {
+      "title": "To Number",
+      "type": "string"
+    },
+    "template_id": {
+      "enum": [
+        "ticket_created",
+        "answer_copy",
+        "staff_alert",
+        "status_change"
+      ],
+      "title": "Template Id",
+      "type": "string"
+    },
+    "vars": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Vars",
+      "type": "object"
+    },
+    "consent": {
+      "enum": [
+        "caller_requested",
+        "offer_accepted",
+        "transactional",
+        "staff"
+      ],
+      "title": "Consent",
+      "type": "string"
+    },
+    "call_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Call Id"
+    },
+    "ticket_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ticket Id"
+    }
+  },
+  "required": [
+    "idempotency_key",
+    "to_number",
+    "template_id",
+    "vars",
+    "consent"
+  ],
+  "title": "SmsRequest",
+  "type": "object"
+}

@@ -1,0 +1,5 @@
+{"_request": {"call_id": "call-llm-en", "turn_index": 1, "user_text": "What time does the hostel gate close?", "history": [], "dtmf": null, "received_at": "2026-10-23T10:15:00+05:30"}}
+{"type": "meta", "path": "llm", "tier": "confident", "lang": "en", "interruptable": true}
+{"type": "speech", "text": "Hostel gates close at 10 pm on weekdays and 11 pm on weekends, as per the Hostel Rules."}
+{"type": "speech", "text": " Anything else I can help with?"}
+{"type": "done", "summary": {"call_id": "call-llm-en", "turn_index": 1, "path": "llm", "tier": "confident", "lang": "en", "kb_ids": ["HST-003"], "urgency": null, "priority": "P4", "priority_reason": null, "rule_id": null, "user_text_redacted": "What time does the hostel gate close?", "assistant_text": "Hostel gates close at 10 pm on weekdays and 11 pm on weekends, as per the Hostel Rules. Anything else I can help with?", "validator_flags": [], "latency_ms": {"safety": 1, "faq": 17, "llm_ttft": 310, "llm_total": 820, "brain_total": 840}, "cached_tokens": 61440, "created_at": "2026-10-23T10:15:00+05:30"}}

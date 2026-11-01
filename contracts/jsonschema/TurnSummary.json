@@ -1,0 +1,243 @@
+{
+  "$defs": {
+    "Lang": {
+      "enum": [
+        "hi",
+        "en",
+        "hinglish"
+      ],
+      "title": "Lang",
+      "type": "string"
+    },
+    "Path": {
+      "enum": [
+        "safety",
+        "faq",
+        "llm",
+        "slot_filling",
+        "escalation",
+        "fallback"
+      ],
+      "title": "Path",
+      "type": "string"
+    },
+    "Priority": {
+      "enum": [
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "title": "Priority",
+      "type": "string"
+    },
+    "Tier": {
+      "enum": [
+        "confident",
+        "partial",
+        "escalate",
+        "chitchat",
+        "clarify"
+      ],
+      "title": "Tier",
+      "type": "string"
+    },
+    "UrgencyFacts": {
+      "additionalProperties": false,
+      "properties": {
+        "event_type": {
+          "default": "none",
+          "enum": [
+            "exam",
+            "fee_deadline",
+            "form_deadline",
+            "admit_card",
+            "safety",
+            "medical",
+            "harassment",
+            "complaint",
+            "other",
+            "none"
+          ],
+          "title": "Event Type",
+          "type": "string"
+        },
+        "minutes_to_event": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Minutes To Event"
+        },
+        "blocked": {
+          "default": false,
+          "title": "Blocked",
+          "type": "boolean"
+        },
+        "safety_flag": {
+          "default": false,
+          "title": "Safety Flag",
+          "type": "boolean"
+        },
+        "affected": {
+          "anyOf": [
+            {
+              "enum": [
+                "self",
+                "ward",
+                "other"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Affected"
+        }
+      },
+      "title": "UrgencyFacts",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "call_id": {
+      "title": "Call Id",
+      "type": "string"
+    },
+    "turn_index": {
+      "title": "Turn Index",
+      "type": "integer"
+    },
+    "path": {
+      "$ref": "#/$defs/Path"
+    },
+    "tier": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Tier"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "lang": {
+      "$ref": "#/$defs/Lang"
+    },
+    "kb_ids": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Kb Ids",
+      "type": "array"
+    },
+    "urgency": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/UrgencyFacts"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "priority": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Priority"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "priority_reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Priority Reason"
+    },
+    "rule_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Rule Id"
+    },
+    "user_text_redacted": {
+      "title": "User Text Redacted",
+      "type": "string"
+    },
+    "assistant_text": {
+      "title": "Assistant Text",
+      "type": "string"
+    },
+    "validator_flags": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Validator Flags",
+      "type": "array"
+    },
+    "latency_ms": {
+      "additionalProperties": {
+        "type": "integer"
+      },
+      "default": {},
+      "title": "Latency Ms",
+      "type": "object"
+    },
+    "cached_tokens": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cached Tokens"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "call_id",
+    "turn_index",
+    "path",
+    "lang",
+    "user_text_redacted",
+    "assistant_text",
+    "created_at"
+  ],
+  "title": "TurnSummary",
+  "type": "object"
+}

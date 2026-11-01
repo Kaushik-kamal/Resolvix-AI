@@ -1,0 +1,8 @@
+data: {"id":"resolvix-call-urgent-exam-2","object":"chat.completion.custom_metadata","created":1792735500,"model":"resolvix-brain","choices":[],"metadata":{"interruptable":false}}
+
+data: {"id":"resolvix-call-urgent-exam-2","object":"chat.completion.chunk","created":1792735500,"model":"resolvix-brain","choices":[{"index":0,"delta":{"role":"assistant","content":"Ye urgent hai. Maine Exam Cell ke liye ticket E X, ek shoonya chaar do bana diya hai aur abhi aapko unse jod raha hoon. Line par bane rahiye."},"finish_reason":null}]}
+
+data: {"id":"resolvix-call-urgent-exam-2","object":"chat.completion.chunk","created":1792735500,"model":"resolvix-brain","choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}
+
+data: [DONE]
+

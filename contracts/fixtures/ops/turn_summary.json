@@ -1,0 +1,24 @@
+{
+  "call_id": "call-urgent-exam",
+  "turn_index": 2,
+  "path": "escalation",
+  "tier": "escalate",
+  "lang": "hinglish",
+  "kb_ids": [],
+  "urgency": {
+    "event_type": "exam",
+    "minutes_to_event": 15,
+    "blocked": true,
+    "safety_flag": false,
+    "affected": "self"
+  },
+  "priority": "P1",
+  "priority_reason": "R-EXAM-60: exam in 15 min, caller cannot find room",
+  "rule_id": "R-EXAM-60",
+  "user_text_redacted": "Roll number [REDACTED], paper Data Structures.",
+  "assistant_text": "Ye urgent hai. Maine Exam Cell ke liye ticket {{ticket_id}} bana diya hai aur abhi aapko unse jod raha hoon. Line par bane rahiye.",
+  "validator_flags": [],
+  "latency_ms": {},
+  "cached_tokens": null,
+  "created_at": "2026-10-23T10:15:00+05:30"
+}

@@ -1,0 +1,65 @@
+{
+  "$defs": {
+    "CallChannel": {
+      "enum": [
+        "pstn",
+        "web",
+        "test"
+      ],
+      "title": "CallChannel",
+      "type": "string"
+    },
+    "Lang": {
+      "enum": [
+        "hi",
+        "en",
+        "hinglish"
+      ],
+      "title": "Lang",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "call_id": {
+      "title": "Call Id",
+      "type": "string"
+    },
+    "channel": {
+      "$ref": "#/$defs/CallChannel"
+    },
+    "caller_number": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Caller Number"
+    },
+    "started_at": {
+      "format": "date-time",
+      "title": "Started At",
+      "type": "string"
+    },
+    "kb_version": {
+      "title": "Kb Version",
+      "type": "string"
+    },
+    "lang": {
+      "$ref": "#/$defs/Lang",
+      "default": "hinglish"
+    }
+  },
+  "required": [
+    "call_id",
+    "channel",
+    "started_at",
+    "kb_version"
+  ],
+  "title": "CallStart",
+  "type": "object"
+}

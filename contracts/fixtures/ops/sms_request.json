@@ -1,0 +1,12 @@
+{
+  "idempotency_key": "call-complaint:ticket_created:+919000000004",
+  "to_number": "+919000000004",
+  "template_id": "ticket_created",
+  "vars": {
+    "ticket_id": "HS-1044",
+    "dept": "Hostel Office"
+  },
+  "consent": "transactional",
+  "call_id": "call-complaint",
+  "ticket_id": "HS-1044"
+}

@@ -1,0 +1,245 @@
+{
+  "version_label": "sample-1",
+  "exported_at": "2026-10-23T10:15:00+05:30",
+  "entries": [
+    {
+      "id": "FEE-001",
+      "department": "accounts",
+      "question_variants": [
+        "B.Tech 2nd year fee last date",
+        "fees kab tak jama karni hai",
+        "semester fee deadline"
+      ],
+      "answer_en": "The last date for B.Tech second-year semester fee is 30 November 2026.",
+      "answer_hi": "B.Tech second year ki semester fee ki last date 30 November 2026 hai.",
+      "source_title": "Fee Notice 2026-27",
+      "source_ref": "p.1",
+      "valid_from": null,
+      "valid_until": "2026-11-30",
+      "tags": [
+        "fee",
+        "deadline"
+      ],
+      "is_faq": true,
+      "status": "approved"
+    },
+    {
+      "id": "FEE-002",
+      "department": "accounts",
+      "question_variants": [
+        "late fee fine",
+        "late fee kitni hai"
+      ],
+      "answer_en": "A late fine of 100 rupees per day applies after the due date, up to 15 days.",
+      "answer_hi": "Due date ke baad 100 rupaye roz late fine lagta hai, 15 din tak.",
+      "source_title": "Fee Notice 2026-27",
+      "source_ref": "p.2",
+      "valid_from": null,
+      "valid_until": null,
+      "tags": [
+        "fee"
+      ],
+      "is_faq": true,
+      "status": "approved"
+    },
+    {
+      "id": "FEE-003",
+      "department": "accounts",
+      "question_variants": [
+        "how to pay fees online",
+        "fees online kaise bhare"
+      ],
+      "answer_en": "Fees are paid online through the college ERP portal under Fee Payment; receipts appear in the portal within one working day.",
+      "answer_hi": "Fees college ERP portal par Fee Payment section se online bharein; receipt ek working day mein portal par aa jaati hai.",
+      "source_title": "Fee Payment Guide",
+      "source_ref": "section 2",
+      "valid_from": null,
+      "valid_until": null,
+      "tags": [
+        "fee",
+        "payment"
+      ],
+      "is_faq": false,
+      "status": "approved"
+    },
+    {
+      "id": "EXM-001",
+      "department": "exam_cell",
+      "question_variants": [
+        "end semester exam start date",
+        "exam kab se hain"
+      ],
+      "answer_en": "End-semester theory exams start on 8 December 2026.",
+      "answer_hi": "End-semester theory exams 8 December 2026 se shuru hain.",
+      "source_title": "Academic Calendar 2026-27",
+      "source_ref": "p.3",
+      "valid_from": null,
+      "valid_until": null,
+      "tags": [
+        "exam",
+        "date"
+      ],
+      "is_faq": true,
+      "status": "approved"
+    },
+    {
+      "id": "EXM-002",
+      "department": "exam_cell",
+      "question_variants": [
+        "admit card kab milega",
+        "where to get admit card"
+      ],
+      "answer_en": "Admit cards are available on the ERP portal three days before the first exam.",
+      "answer_hi": "Admit card pehle exam se teen din pehle ERP portal par mil jaata hai.",
+      "source_title": "Exam Notice 14",
+      "source_ref": "p.1",
+      "valid_from": null,
+      "valid_until": null,
+      "tags": [
+        "exam",
+        "admit card"
+      ],
+      "is_faq": true,
+      "status": "approved"
+    },
+    {
+      "id": "EXM-003",
+      "department": "exam_cell",
+      "question_variants": [
+        "seating plan",
+        "exam room kaise pata kare"
+      ],
+      "answer_en": "The seating plan is put up on the notice board of each block and on the ERP portal one day before each exam.",
+      "answer_hi": "Seating plan har block ke notice board aur ERP portal par har exam se ek din pehle lag jaata hai.",
+      "source_title": "Exam Notice 14",
+      "source_ref": "p.2",
+      "valid_from": null,
+      "valid_until": null,
+      "tags": [
+        "exam",
+        "room"
+      ],
+      "is_faq": false,
+      "status": "approved"
+    },
+    {
+      "id": "EXM-004",
+      "department": "exam_cell",
+      "question_variants": [
+        "re-evaluation form",
+        "re-evaluation kaise apply kare"
+      ],
+      "answer_en": "Re-evaluation forms are issued by the Exam Cell within 7 days of the result declaration.",
+      "answer_hi": "Re-evaluation form result aane ke 7 din ke andar Exam Cell se milta hai.",
+      "source_title": "Examination Rules",
+      "source_ref": "rule 9.2",
+      "valid_from": null,
+      "valid_until": null,
+      "tags": [
+        "exam",
+        "re-evaluation"
+      ],
+      "is_faq": false,
+      "status": "approved"
+    },
+    {
+      "id": "HST-001",
+      "department": "hostel",
+      "question_variants": [
+        "hostel fee",
+        "hostel ki fees kitni hai"
+      ],
+      "answer_en": "Hostel fee for 2026-27 is 95,000 rupees per year including mess, for twin-sharing rooms.",
+      "answer_hi": "2026-27 ke liye hostel fee 95,000 rupaye saal hai, mess ke saath, twin-sharing room.",
+      "source_title": "Hostel Prospectus 2026-27",
+      "source_ref": "p.4",
+      "valid_from": null,
+      "valid_until": null,
+      "tags": [
+        "hostel",
+        "fee"
+      ],
+      "is_faq": true,
+      "status": "approved"
+    },
+    {
+      "id": "HST-002",
+      "department": "hostel",
+      "question_variants": [
+        "hostel room change form",
+        "room change kaise kare"
+      ],
+      "answer_en": "Room change requests use Form H-4, submitted at the hostel office within 7 days of allotment.",
+      "answer_hi": "Room change ke liye Form H-4 allotment ke 7 din ke andar hostel office mein jama karein.",
+      "source_title": "Hostel Rules 2026",
+      "source_ref": "p.3",
+      "valid_from": null,
+      "valid_until": null,
+      "tags": [
+        "hostel",
+        "form"
+      ],
+      "is_faq": false,
+      "status": "approved"
+    },
+    {
+      "id": "HST-003",
+      "department": "hostel",
+      "question_variants": [
+        "hostel gate timing",
+        "hostel kitne baje band hota hai"
+      ],
+      "answer_en": "Hostel gates close at 10 pm on weekdays and 11 pm on weekends.",
+      "answer_hi": "Hostel gate weekdays mein raat 10 baje aur weekend par 11 baje band hota hai.",
+      "source_title": "Hostel Rules 2026",
+      "source_ref": "p.1",
+      "valid_from": null,
+      "valid_until": null,
+      "tags": [
+        "hostel",
+        "timing"
+      ],
+      "is_faq": true,
+      "status": "approved"
+    },
+    {
+      "id": "HST-004",
+      "department": "hostel",
+      "question_variants": [
+        "mess timing",
+        "khana kab milta hai"
+      ],
+      "answer_en": "Mess timings are 7:30 to 9 am, 12:30 to 2 pm, and 7:30 to 9 pm.",
+      "answer_hi": "Mess ka time subah 7:30 se 9, dopahar 12:30 se 2, aur raat 7:30 se 9 baje tak hai.",
+      "source_title": "Hostel Rules 2026",
+      "source_ref": "p.2",
+      "valid_from": null,
+      "valid_until": null,
+      "tags": [
+        "hostel",
+        "mess"
+      ],
+      "is_faq": false,
+      "status": "approved"
+    },
+    {
+      "id": "GEN-001",
+      "department": "helpdesk",
+      "question_variants": [
+        "office timing",
+        "college office kab khulta hai"
+      ],
+      "answer_en": "The administrative office is open 9 am to 5 pm, Monday to Friday, and 9 am to 1 pm on Saturday.",
+      "answer_hi": "Administrative office Monday se Friday subah 9 se shaam 5, aur Saturday 9 se 1 baje tak khula hai.",
+      "source_title": "College Information Booklet",
+      "source_ref": "p.1",
+      "valid_from": null,
+      "valid_until": null,
+      "tags": [
+        "timing"
+      ],
+      "is_faq": false,
+      "status": "approved"
+    }
+  ]
+}

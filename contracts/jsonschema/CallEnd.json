@@ -1,0 +1,43 @@
+{
+  "$defs": {
+    "CallOutcome": {
+      "enum": [
+        "answered",
+        "escalated",
+        "transferred",
+        "emergency",
+        "abandoned",
+        "failed"
+      ],
+      "title": "CallOutcome",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "ended_at": {
+      "format": "date-time",
+      "title": "Ended At",
+      "type": "string"
+    },
+    "outcome": {
+      "$ref": "#/$defs/CallOutcome"
+    },
+    "ai_resolved": {
+      "title": "Ai Resolved",
+      "type": "boolean"
+    },
+    "turns_count": {
+      "title": "Turns Count",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "ended_at",
+    "outcome",
+    "ai_resolved",
+    "turns_count"
+  ],
+  "title": "CallEnd",
+  "type": "object"
+}

@@ -1,0 +1,17 @@
+# Seed users for ops-api
+# Passwords are hashed from SEED_PASSWORD env var at startup
+# Never store plaintext passwords in this file
+
+users:
+  - email: admin@demo
+    role: admin
+    department: null
+  - email: exam@demo
+    role: staff
+    department: exam_cell
+  - email: accounts@demo
+    role: staff
+    department: accounts
+  - email: hostel@demo
+    role: staff
+    department: hostel

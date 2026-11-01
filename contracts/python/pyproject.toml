@@ -1,0 +1,13 @@
+[project]
+name = "resolvix-contracts"
+version = "1.0.0"
+description = "Frozen shared contracts for Resolvix (brain protocol, events, ops-api payloads, config)"
+requires-python = ">=3.11"
+dependencies = ["pydantic>=2.7,<3"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["resolvix_contracts*"]

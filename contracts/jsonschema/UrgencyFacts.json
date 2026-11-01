@@ -1,0 +1,63 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "event_type": {
+      "default": "none",
+      "enum": [
+        "exam",
+        "fee_deadline",
+        "form_deadline",
+        "admit_card",
+        "safety",
+        "medical",
+        "harassment",
+        "complaint",
+        "other",
+        "none"
+      ],
+      "title": "Event Type",
+      "type": "string"
+    },
+    "minutes_to_event": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Minutes To Event"
+    },
+    "blocked": {
+      "default": false,
+      "title": "Blocked",
+      "type": "boolean"
+    },
+    "safety_flag": {
+      "default": false,
+      "title": "Safety Flag",
+      "type": "boolean"
+    },
+    "affected": {
+      "anyOf": [
+        {
+          "enum": [
+            "self",
+            "ward",
+            "other"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Affected"
+    }
+  },
+  "title": "UrgencyFacts",
+  "type": "object"
+}

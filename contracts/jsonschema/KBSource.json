@@ -1,0 +1,23 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "kind": {
+      "enum": [
+        "file",
+        "url"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "location": {
+      "title": "Location",
+      "type": "string"
+    }
+  },
+  "required": [
+    "kind",
+    "location"
+  ],
+  "title": "KBSource",
+  "type": "object"
+}

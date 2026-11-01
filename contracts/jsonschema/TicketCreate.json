@@ -1,0 +1,124 @@
+{
+  "$defs": {
+    "Priority": {
+      "enum": [
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "title": "Priority",
+      "type": "string"
+    },
+    "TicketType": {
+      "enum": [
+        "EMERGENCY",
+        "URGENT",
+        "KNOWLEDGE_GAP",
+        "COMPLAINT",
+        "HUMAN_REQUEST",
+        "SYSTEM_FAILURE"
+      ],
+      "title": "TicketType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A -> C (POST /v1/tickets). Built by B inside a CreateTicketAction.",
+  "properties": {
+    "idempotency_key": {
+      "title": "Idempotency Key",
+      "type": "string"
+    },
+    "call_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Call Id"
+    },
+    "type": {
+      "$ref": "#/$defs/TicketType"
+    },
+    "priority": {
+      "$ref": "#/$defs/Priority"
+    },
+    "priority_reason": {
+      "description": "rule id + human-readable reason, e.g. 'R-EXAM-60: exam in 15 min, caller blocked'",
+      "title": "Priority Reason",
+      "type": "string"
+    },
+    "department": {
+      "title": "Department",
+      "type": "string"
+    },
+    "summary": {
+      "maxLength": 280,
+      "title": "Summary",
+      "type": "string"
+    },
+    "collected_fields": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "default": {},
+      "title": "Collected Fields",
+      "type": "object"
+    },
+    "caller_number": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Caller Number"
+    },
+    "callback_number": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Callback Number"
+    },
+    "callback_requested": {
+      "default": false,
+      "title": "Callback Requested",
+      "type": "boolean"
+    },
+    "transcript_excerpt": {
+      "default": "",
+      "title": "Transcript Excerpt",
+      "type": "string"
+    },
+    "brief": {
+      "default": "",
+      "description": "2-4 line staff brief shown before pickup",
+      "title": "Brief",
+      "type": "string"
+    }
+  },
+  "required": [
+    "idempotency_key",
+    "type",
+    "priority",
+    "priority_reason",
+    "department",
+    "summary"
+  ],
+  "title": "TicketCreate",
+  "type": "object"
+}

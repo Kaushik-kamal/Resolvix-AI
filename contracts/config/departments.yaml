@@ -1,0 +1,61 @@
+# OWNER: contracts (frozen). Read by A (transfer), B (routing/office hours), C (dashboard, ticket prefixes).
+# Phone numbers below are PLACEHOLDERS. Replace with office numbers (never personal mobiles) before the demo.
+timezone: Asia/Kolkata
+default_department: helpdesk
+emergency:
+  public_numbers: ["112"]          # spoken in emergency script; confirm the list with the college
+departments:
+  - key: exam_cell
+    name: Examination Cell
+    ticket_prefix: EX
+    transfer_numbers: ["+910000000101", "+910000000102"]
+    sms_alert_numbers: ["+910000000101"]
+    hours: [{days: [mon, tue, wed, thu, fri], open: "09:00", close: "17:00"}, {days: [sat], open: "09:00", close: "13:00"}]
+    topics: [exam, admit card, result, re-evaluation, datesheet, seating, room]
+    mvp: true
+  - key: accounts
+    name: Accounts / Fees
+    ticket_prefix: AC
+    transfer_numbers: ["+910000000201"]
+    sms_alert_numbers: ["+910000000201"]
+    hours: [{days: [mon, tue, wed, thu, fri], open: "09:30", close: "16:30"}]
+    topics: [fee, fees, refund, payment, fine, receipt]
+    mvp: true
+  - key: hostel
+    name: Hostel Office
+    ticket_prefix: HS
+    transfer_numbers: ["+910000000301"]
+    sms_alert_numbers: ["+910000000301"]
+    hours: [{days: [mon, tue, wed, thu, fri, sat, sun], open: "08:00", close: "20:00"}]
+    topics: [hostel, mess, room, wifi, warden]
+    mvp: true
+  - key: helpdesk
+    name: General Helpdesk
+    ticket_prefix: HD
+    transfer_numbers: ["+910000000001"]
+    sms_alert_numbers: ["+910000000001"]
+    hours: [{days: [mon, tue, wed, thu, fri], open: "09:00", close: "17:00"}, {days: [sat], open: "09:00", close: "13:00"}]
+    topics: []
+    mvp: true
+  - key: emergency
+    name: Emergency On-Call
+    ticket_prefix: EM
+    transfer_numbers: ["+910000000900"]
+    sms_alert_numbers: ["+910000000901", "+910000000902"]
+    hours: [{days: [mon, tue, wed, thu, fri, sat, sun], open: "00:00", close: "23:59"}]
+    topics: []
+    mvp: true
+  - key: transport
+    name: Transport
+    ticket_prefix: TR
+    transfer_numbers: ["+910000000401"]
+    hours: [{days: [mon, tue, wed, thu, fri], open: "09:00", close: "17:00"}]
+    topics: [bus, route, transport, pass]
+    mvp: false     # data-only department: tickets allowed, KB optional
+  - key: admissions
+    name: Admission Cell
+    ticket_prefix: AD
+    transfer_numbers: ["+910000000501"]
+    hours: [{days: [mon, tue, wed, thu, fri, sat], open: "09:00", close: "17:00"}]
+    topics: [admission, eligibility, documents, counselling]
+    mvp: false

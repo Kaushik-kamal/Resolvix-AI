@@ -1,0 +1,15 @@
+{
+  "idempotency_key": "call-llm-down:1:SYSTEM_FAILURE",
+  "call_id": "call-llm-down",
+  "type": "SYSTEM_FAILURE",
+  "priority": "P3",
+  "priority_reason": "R-FALLBACK: LLM timeout after retry",
+  "department": "helpdesk",
+  "summary": "Agent could not answer: LLM unavailable. Question: admission documents.",
+  "collected_fields": {},
+  "caller_number": "+919000000006",
+  "callback_number": "+919000000006",
+  "callback_requested": true,
+  "transcript_excerpt": "",
+  "brief": "System failure during call. Call back about admission documents."
+}

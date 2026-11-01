@@ -1,0 +1,172 @@
+openapi: 3.1.0
+info:
+  title: Resolvix ops-api (owned by Member C)
+  version: 1.0.0
+  description: |
+    Persistence, tickets, SMS, knowledge-gap and KB-document service.
+    Callers: A (voice-runtime) via the /v1/* "system" endpoints with header X-Service-Key;
+             C's dashboard via the same endpoints plus /v1/auth/* with a session cookie.
+    Every error response uses ErrorEnvelope. All timestamps are ISO-8601 with offset.
+    Base URL (dev): http://localhost:8100
+servers:
+  - url: http://localhost:8100
+components:
+  securitySchemes:
+    serviceKey: {type: apiKey, in: header, name: X-Service-Key}
+    session: {type: apiKey, in: cookie, name: resolvix_session}
+  responses:
+    Error:
+      description: Error
+      content: {application/json: {schema: {$ref: "../jsonschema/ErrorEnvelope.json"}}}
+security: [{serviceKey: []}, {session: []}]
+paths:
+  /healthz:
+    get:
+      security: []
+      responses: {"200": {description: "{status: ok, contract_version: 1.0.0, notify_mode: mock|live}"}}
+
+  # ---------------------------------------------------------------- calls (A writes, dashboard reads)
+  /v1/calls:
+    post:
+      summary: Register a call at start (A)
+      requestBody: {required: true, content: {application/json: {schema: {$ref: "../jsonschema/CallStart.json"}}}}
+      responses:
+        "201": {description: Created}
+        "200": {description: Already registered (idempotent on call_id)}
+        "422": {$ref: "#/components/responses/Error"}
+    get:
+      summary: List calls (dashboard)
+      parameters:
+        - {name: from, in: query, schema: {type: string, format: date-time}}
+        - {name: outcome, in: query, schema: {type: string}}
+        - {name: limit, in: query, schema: {type: integer, default: 50}}
+      responses: {"200": {description: "{items: CallSummary[]}"}}
+  /v1/calls/{call_id}/turns:
+    post:
+      summary: Append one TurnSummary (A, after each DoneEvent). Idempotent on (call_id, turn_index).
+      parameters: [{name: call_id, in: path, required: true, schema: {type: string}}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: "../jsonschema/TurnSummary.json"}}}}
+      responses: {"201": {description: Stored}, "200": {description: Duplicate ignored}, "404": {$ref: "#/components/responses/Error"}}
+  /v1/calls/{call_id}/end:
+    post:
+      parameters: [{name: call_id, in: path, required: true, schema: {type: string}}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: "../jsonschema/CallEnd.json"}}}}
+      responses: {"200": {description: Updated}, "404": {$ref: "#/components/responses/Error"}}
+  /v1/calls/{call_id}:
+    get:
+      summary: Call detail with turns (dashboard). Logs a transcript_viewed audit entry.
+      parameters: [{name: call_id, in: path, required: true, schema: {type: string}}]
+      responses: {"200": {description: "{call: CallStart+CallEnd fields, turns: TurnSummary[]}"}}
+
+  # ---------------------------------------------------------------- tickets
+  /v1/tickets:
+    post:
+      summary: Create ticket (A). Idempotent on idempotency_key. Ticket id = <dept prefix>-<4-digit global sequence starting 1001>.
+      requestBody: {required: true, content: {application/json: {schema: {$ref: "../jsonschema/TicketCreate.json"}}}}
+      responses:
+        "201": {description: Created, content: {application/json: {schema: {$ref: "../jsonschema/TicketCreated.json"}}}}
+        "200": {description: Existing ticket for same idempotency_key (created=false), content: {application/json: {schema: {$ref: "../jsonschema/TicketCreated.json"}}}}
+        "422": {$ref: "#/components/responses/Error"}
+    get:
+      summary: List tickets (dashboard; A uses caller_number+status=open for repeat-caller memory)
+      parameters:
+        - {name: status, in: query, schema: {type: string}}
+        - {name: department, in: query, schema: {type: string}}
+        - {name: priority, in: query, schema: {type: string}}
+        - {name: caller_number, in: query, schema: {type: string}}
+        - {name: limit, in: query, schema: {type: integer, default: 100}}
+      responses: {"200": {description: "{items: Ticket[]} sorted by priority asc (P1 first) then created_at desc"}}
+  /v1/tickets/{ticket_id}:
+    get:
+      parameters: [{name: ticket_id, in: path, required: true, schema: {type: string}}]
+      responses:
+        "200": {description: OK, content: {application/json: {schema: {$ref: "../jsonschema/Ticket.json"}}}}
+        "404": {$ref: "#/components/responses/Error"}
+    patch:
+      summary: Staff update (dashboard). Status change triggers ONE status_change SMS to callback_number if consent exists.
+      parameters: [{name: ticket_id, in: path, required: true, schema: {type: string}}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: "../jsonschema/TicketPatch.json"}}}}
+      responses: {"200": {description: Updated Ticket}, "404": {$ref: "#/components/responses/Error"}}
+  /v1/tickets/{ticket_id}/events:
+    post:
+      summary: Append a ticket event (A reports transfer attempts/results; C internal for SMS)
+      parameters: [{name: ticket_id, in: path, required: true, schema: {type: string}}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: "../jsonschema/TicketEvent.json"}}}}
+      responses: {"201": {description: Stored}}
+    get:
+      parameters: [{name: ticket_id, in: path, required: true, schema: {type: string}}]
+      responses: {"200": {description: "{items: TicketEvent[]}"}}
+
+  # ---------------------------------------------------------------- notifications
+  /v1/notifications/sms:
+    post:
+      summary: |
+        Queue an SMS (A). C enforces the SMS policy: template whitelist, consent, dedupe by idempotency_key,
+        no personal data, URL whitelist. NOTIFY_MODE=mock records and returns mode=mock.
+      requestBody: {required: true, content: {application/json: {schema: {$ref: "../jsonschema/SmsRequest.json"}}}}
+      responses:
+        "202": {description: Accepted, content: {application/json: {schema: {$ref: "../jsonschema/SmsResult.json"}}}}
+        "200": {description: Duplicate (same idempotency_key), returns original SmsResult}
+        "422": {$ref: "#/components/responses/Error"}
+
+  # ---------------------------------------------------------------- knowledge gaps
+  /v1/gaps:
+    post:
+      requestBody: {required: true, content: {application/json: {schema: {$ref: "../jsonschema/GapCreate.json"}}}}
+      responses: {"201": {description: Stored}}
+  /v1/gaps/clusters:
+    get:
+      responses: {"200": {description: "{items: GapCluster[]} sorted by count desc"}}
+  /v1/gaps/clusters/{cluster_id}:
+    patch:
+      parameters: [{name: cluster_id, in: path, required: true, schema: {type: string}}]
+      requestBody: {content: {application/json: {schema: {type: object, properties: {status: {type: string, enum: [new, needs_document, answered, ignored]}}}}}}
+      responses: {"200": {description: Updated}}
+
+  # ---------------------------------------------------------------- knowledge base documents
+  /v1/kb/entries:
+    get:
+      parameters: [{name: status, in: query, schema: {type: string, enum: [draft, approved, archived]}}]
+      responses: {"200": {description: "{items: KBEntry[]}"}}
+    post:
+      summary: Create or update one entry (dashboard). New/edited entries start as draft.
+      requestBody: {required: true, content: {application/json: {schema: {$ref: "../jsonschema/KBEntry.json"}}}}
+      responses: {"201": {description: Stored}, "422": {$ref: "#/components/responses/Error"}}
+  /v1/kb/import:
+    post:
+      summary: Bulk import kb.jsonl (multipart file). Entries keep their status field. Injection scan flags suspicious text as draft.
+      responses: {"200": {description: "{imported: int, flagged: int, errors: [{line, message}]}"}}
+  /v1/kb/entries/{id}/status:
+    post:
+      parameters: [{name: id, in: path, required: true, schema: {type: string}}]
+      requestBody: {content: {application/json: {schema: {type: object, properties: {status: {type: string, enum: [draft, approved, archived]}}}}}}
+      responses: {"200": {description: Updated}}
+  /v1/kb/export:
+    get:
+      summary: Approved, non-expired entries only. Consumed by B's compiler (KBSource kind=url).
+      responses: {"200": {description: OK, content: {application/json: {schema: {$ref: "../jsonschema/KBExport.json"}}}}}
+  /v1/kb/publish:
+    post:
+      summary: |
+        Dashboard "Publish". C calls A's POST {RUNTIME_URL}/admin/kb/reload with KBSource{kind:url, location:<this>/v1/kb/export}
+        and returns A's KBVersionInfo. If A is unreachable, returns 502 upstream_error (dashboard shows it).
+      responses:
+        "200": {description: OK, content: {application/json: {schema: {$ref: "../jsonschema/KBVersionInfo.json"}}}}
+        "502": {$ref: "#/components/responses/Error"}
+
+  # ---------------------------------------------------------------- config + live stream
+  /v1/departments:
+    get:
+      responses: {"200": {description: DepartmentsConfig loaded from contracts/config/departments.yaml, content: {application/json: {schema: {$ref: "../jsonschema/DepartmentsConfig.json"}}}}}
+  /v1/urgency-rules:
+    get:
+      responses: {"200": {description: "Raw urgency_rules.yaml as JSON (read-only view)"}}
+  /v1/stream:
+    get:
+      summary: Server-Sent Events for the dashboard. Event names call.started, call.turn, call.ended, ticket.created, ticket.updated, alert.p1, gap.created. data = the corresponding JSON object.
+      responses: {"200": {description: text/event-stream}}
+  /v1/auth/login:
+    post:
+      security: []
+      requestBody: {content: {application/json: {schema: {type: object, properties: {email: {type: string}, password: {type: string}}}}}}
+      responses: {"200": {description: Sets resolvix_session cookie}, "401": {$ref: "#/components/responses/Error"}}

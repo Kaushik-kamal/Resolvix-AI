@@ -1,0 +1,721 @@
+{
+  "$defs": {
+    "ActionEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "action",
+          "default": "action",
+          "title": "Type",
+          "type": "string"
+        },
+        "action": {
+          "discriminator": {
+            "mapping": {
+              "create_ticket": "#/$defs/CreateTicketAction",
+              "end_call": "#/$defs/EndCallAction",
+              "log_gap": "#/$defs/LogGapAction",
+              "schedule_callback": "#/$defs/ScheduleCallbackAction",
+              "send_sms": "#/$defs/SendSmsAction",
+              "transfer": "#/$defs/TransferAction"
+            },
+            "propertyName": "kind"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/CreateTicketAction"
+            },
+            {
+              "$ref": "#/$defs/TransferAction"
+            },
+            {
+              "$ref": "#/$defs/SendSmsAction"
+            },
+            {
+              "$ref": "#/$defs/LogGapAction"
+            },
+            {
+              "$ref": "#/$defs/ScheduleCallbackAction"
+            },
+            {
+              "$ref": "#/$defs/EndCallAction"
+            }
+          ],
+          "title": "Action"
+        },
+        "blocking": {
+          "default": false,
+          "title": "Blocking",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "action"
+      ],
+      "title": "ActionEvent",
+      "type": "object"
+    },
+    "CreateTicketAction": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "create_ticket",
+          "default": "create_ticket",
+          "title": "Kind",
+          "type": "string"
+        },
+        "ticket": {
+          "$ref": "#/$defs/TicketCreate"
+        }
+      },
+      "required": [
+        "ticket"
+      ],
+      "title": "CreateTicketAction",
+      "type": "object"
+    },
+    "DoneEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "done",
+          "default": "done",
+          "title": "Type",
+          "type": "string"
+        },
+        "summary": {
+          "$ref": "#/$defs/TurnSummary"
+        }
+      },
+      "required": [
+        "summary"
+      ],
+      "title": "DoneEvent",
+      "type": "object"
+    },
+    "EndCallAction": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "end_call",
+          "default": "end_call",
+          "title": "Kind",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "reason"
+      ],
+      "title": "EndCallAction",
+      "type": "object"
+    },
+    "Lang": {
+      "enum": [
+        "hi",
+        "en",
+        "hinglish"
+      ],
+      "title": "Lang",
+      "type": "string"
+    },
+    "LogGapAction": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "log_gap",
+          "default": "log_gap",
+          "title": "Kind",
+          "type": "string"
+        },
+        "question": {
+          "title": "Question",
+          "type": "string"
+        },
+        "lang": {
+          "$ref": "#/$defs/Lang"
+        },
+        "department_guess": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Department Guess"
+        }
+      },
+      "required": [
+        "question",
+        "lang"
+      ],
+      "title": "LogGapAction",
+      "type": "object"
+    },
+    "MetaEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "meta",
+          "default": "meta",
+          "title": "Type",
+          "type": "string"
+        },
+        "path": {
+          "$ref": "#/$defs/Path"
+        },
+        "tier": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Tier"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "lang": {
+          "$ref": "#/$defs/Lang"
+        },
+        "interruptable": {
+          "default": true,
+          "title": "Interruptable",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "path",
+        "lang"
+      ],
+      "title": "MetaEvent",
+      "type": "object"
+    },
+    "Path": {
+      "enum": [
+        "safety",
+        "faq",
+        "llm",
+        "slot_filling",
+        "escalation",
+        "fallback"
+      ],
+      "title": "Path",
+      "type": "string"
+    },
+    "Priority": {
+      "enum": [
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "title": "Priority",
+      "type": "string"
+    },
+    "ScheduleCallbackAction": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "schedule_callback",
+          "default": "schedule_callback",
+          "title": "Kind",
+          "type": "string"
+        },
+        "to_number": {
+          "title": "To Number",
+          "type": "string"
+        },
+        "not_before": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Not Before"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "to_number",
+        "reason"
+      ],
+      "title": "ScheduleCallbackAction",
+      "type": "object"
+    },
+    "SendSmsAction": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "send_sms",
+          "default": "send_sms",
+          "title": "Kind",
+          "type": "string"
+        },
+        "idempotency_key": {
+          "title": "Idempotency Key",
+          "type": "string"
+        },
+        "to_number": {
+          "title": "To Number",
+          "type": "string"
+        },
+        "template_id": {
+          "enum": [
+            "ticket_created",
+            "answer_copy",
+            "staff_alert",
+            "status_change"
+          ],
+          "title": "Template Id",
+          "type": "string"
+        },
+        "vars": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Vars",
+          "type": "object"
+        },
+        "consent": {
+          "enum": [
+            "caller_requested",
+            "offer_accepted",
+            "transactional",
+            "staff"
+          ],
+          "title": "Consent",
+          "type": "string"
+        }
+      },
+      "required": [
+        "idempotency_key",
+        "to_number",
+        "template_id",
+        "vars",
+        "consent"
+      ],
+      "title": "SendSmsAction",
+      "type": "object"
+    },
+    "SpeechEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "speech",
+          "default": "speech",
+          "title": "Type",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text"
+      ],
+      "title": "SpeechEvent",
+      "type": "object"
+    },
+    "TicketCreate": {
+      "additionalProperties": false,
+      "description": "A -> C (POST /v1/tickets). Built by B inside a CreateTicketAction.",
+      "properties": {
+        "idempotency_key": {
+          "title": "Idempotency Key",
+          "type": "string"
+        },
+        "call_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Call Id"
+        },
+        "type": {
+          "$ref": "#/$defs/TicketType"
+        },
+        "priority": {
+          "$ref": "#/$defs/Priority"
+        },
+        "priority_reason": {
+          "description": "rule id + human-readable reason, e.g. 'R-EXAM-60: exam in 15 min, caller blocked'",
+          "title": "Priority Reason",
+          "type": "string"
+        },
+        "department": {
+          "title": "Department",
+          "type": "string"
+        },
+        "summary": {
+          "maxLength": 280,
+          "title": "Summary",
+          "type": "string"
+        },
+        "collected_fields": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {},
+          "title": "Collected Fields",
+          "type": "object"
+        },
+        "caller_number": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Caller Number"
+        },
+        "callback_number": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Callback Number"
+        },
+        "callback_requested": {
+          "default": false,
+          "title": "Callback Requested",
+          "type": "boolean"
+        },
+        "transcript_excerpt": {
+          "default": "",
+          "title": "Transcript Excerpt",
+          "type": "string"
+        },
+        "brief": {
+          "default": "",
+          "description": "2-4 line staff brief shown before pickup",
+          "title": "Brief",
+          "type": "string"
+        }
+      },
+      "required": [
+        "idempotency_key",
+        "type",
+        "priority",
+        "priority_reason",
+        "department",
+        "summary"
+      ],
+      "title": "TicketCreate",
+      "type": "object"
+    },
+    "TicketType": {
+      "enum": [
+        "EMERGENCY",
+        "URGENT",
+        "KNOWLEDGE_GAP",
+        "COMPLAINT",
+        "HUMAN_REQUEST",
+        "SYSTEM_FAILURE"
+      ],
+      "title": "TicketType",
+      "type": "string"
+    },
+    "Tier": {
+      "enum": [
+        "confident",
+        "partial",
+        "escalate",
+        "chitchat",
+        "clarify"
+      ],
+      "title": "Tier",
+      "type": "string"
+    },
+    "TransferAction": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "transfer",
+          "default": "transfer",
+          "title": "Kind",
+          "type": "string"
+        },
+        "department": {
+          "title": "Department",
+          "type": "string"
+        },
+        "to_number": {
+          "title": "To Number",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "brief": {
+          "title": "Brief",
+          "type": "string"
+        },
+        "requires_ticket": {
+          "default": true,
+          "title": "Requires Ticket",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "department",
+        "to_number",
+        "reason",
+        "brief"
+      ],
+      "title": "TransferAction",
+      "type": "object"
+    },
+    "TurnSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "call_id": {
+          "title": "Call Id",
+          "type": "string"
+        },
+        "turn_index": {
+          "title": "Turn Index",
+          "type": "integer"
+        },
+        "path": {
+          "$ref": "#/$defs/Path"
+        },
+        "tier": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Tier"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "lang": {
+          "$ref": "#/$defs/Lang"
+        },
+        "kb_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Kb Ids",
+          "type": "array"
+        },
+        "urgency": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UrgencyFacts"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "priority": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Priority"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "priority_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Priority Reason"
+        },
+        "rule_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rule Id"
+        },
+        "user_text_redacted": {
+          "title": "User Text Redacted",
+          "type": "string"
+        },
+        "assistant_text": {
+          "title": "Assistant Text",
+          "type": "string"
+        },
+        "validator_flags": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Validator Flags",
+          "type": "array"
+        },
+        "latency_ms": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "default": {},
+          "title": "Latency Ms",
+          "type": "object"
+        },
+        "cached_tokens": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cached Tokens"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "call_id",
+        "turn_index",
+        "path",
+        "lang",
+        "user_text_redacted",
+        "assistant_text",
+        "created_at"
+      ],
+      "title": "TurnSummary",
+      "type": "object"
+    },
+    "UrgencyFacts": {
+      "additionalProperties": false,
+      "properties": {
+        "event_type": {
+          "default": "none",
+          "enum": [
+            "exam",
+            "fee_deadline",
+            "form_deadline",
+            "admit_card",
+            "safety",
+            "medical",
+            "harassment",
+            "complaint",
+            "other",
+            "none"
+          ],
+          "title": "Event Type",
+          "type": "string"
+        },
+        "minutes_to_event": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Minutes To Event"
+        },
+        "blocked": {
+          "default": false,
+          "title": "Blocked",
+          "type": "boolean"
+        },
+        "safety_flag": {
+          "default": false,
+          "title": "Safety Flag",
+          "type": "boolean"
+        },
+        "affected": {
+          "anyOf": [
+            {
+              "enum": [
+                "self",
+                "ward",
+                "other"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Affected"
+        }
+      },
+      "title": "UrgencyFacts",
+      "type": "object"
+    }
+  },
+  "discriminator": {
+    "mapping": {
+      "action": "#/$defs/ActionEvent",
+      "done": "#/$defs/DoneEvent",
+      "meta": "#/$defs/MetaEvent",
+      "speech": "#/$defs/SpeechEvent"
+    },
+    "propertyName": "type"
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/MetaEvent"
+    },
+    {
+      "$ref": "#/$defs/SpeechEvent"
+    },
+    {
+      "$ref": "#/$defs/ActionEvent"
+    },
+    {
+      "$ref": "#/$defs/DoneEvent"
+    }
+  ]
+}

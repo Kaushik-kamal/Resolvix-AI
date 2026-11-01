@@ -1,0 +1,125 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "examples": [
+        "FEE-012"
+      ],
+      "pattern": "^[A-Z]{2,4}-\\d{3,4}$",
+      "title": "Id",
+      "type": "string"
+    },
+    "department": {
+      "examples": [
+        "accounts"
+      ],
+      "title": "Department",
+      "type": "string"
+    },
+    "question_variants": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Question Variants",
+      "type": "array"
+    },
+    "answer_en": {
+      "title": "Answer En",
+      "type": "string"
+    },
+    "answer_hi": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Answer Hi"
+    },
+    "source_title": {
+      "examples": [
+        "Fee Notice 2026-27"
+      ],
+      "title": "Source Title",
+      "type": "string"
+    },
+    "source_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "examples": [
+        "p.1",
+        "https://college.example/notice/12"
+      ],
+      "title": "Source Ref"
+    },
+    "valid_from": {
+      "anyOf": [
+        {
+          "format": "date",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Valid From"
+    },
+    "valid_until": {
+      "anyOf": [
+        {
+          "format": "date",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Valid Until"
+    },
+    "tags": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Tags",
+      "type": "array"
+    },
+    "is_faq": {
+      "default": false,
+      "title": "Is Faq",
+      "type": "boolean"
+    },
+    "status": {
+      "default": "approved",
+      "enum": [
+        "draft",
+        "approved",
+        "archived"
+      ],
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "department",
+    "question_variants",
+    "answer_en",
+    "source_title"
+  ],
+  "title": "KBEntry",
+  "type": "object"
+}

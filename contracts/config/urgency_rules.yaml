@@ -1,0 +1,61 @@
+# OWNER: Member B (brain). Read-only for A and C (C shows it on the dashboard).
+# The LLM only EXTRACTS UrgencyFacts. This deterministic table decides priority. First match wins.
+# Emotional tone alone never changes priority. Thresholds are starting points, to be reviewed with department staff.
+version: 1
+rules:
+  - id: R-SAFETY
+    when: {safety_flag: true}
+    priority: P1
+    ticket_type: EMERGENCY
+    department: emergency
+    action: transfer_now          # speak emergency script first, then ticket, alert, transfer
+    reason: "Safety, medical or harassment statement"
+  - id: R-EXAM-60
+    when: {event_type: exam, minutes_to_event_lte: 60, blocked: true}
+    priority: P1
+    ticket_type: URGENT
+    department: exam_cell
+    action: transfer_now
+    reason: "Exam within 60 minutes and caller blocked"
+  - id: R-DEADLINE-24H
+    when: {event_type_in: [fee_deadline, form_deadline, admit_card], minutes_to_event_lte: 1440, blocked: true}
+    priority: P2
+    ticket_type: URGENT
+    department: from_event       # fee_deadline->accounts, admit_card->exam_cell, form_deadline->topic match
+    action: transfer_if_open_else_callback
+    reason: "Deadline within 24 hours and caller blocked"
+  - id: R-COMPLAINT
+    when: {event_type: complaint}
+    priority: P3
+    ticket_type: COMPLAINT
+    department: from_topic
+    action: ticket_after_readback
+    reason: "Complaint with no near deadline"
+  - id: R-HUMAN
+    when: {intent: human_request}
+    priority: P3
+    ticket_type: HUMAN_REQUEST
+    department: from_topic_or_default
+    action: transfer_if_open_else_callback
+    reason: "Caller asked for a person"
+  - id: R-UNANSWERED
+    when: {tier: escalate}
+    priority: P3
+    ticket_type: KNOWLEDGE_GAP
+    department: from_topic_or_default
+    action: ticket_and_gap
+    reason: "Question not covered by approved documents"
+  - id: R-ROUTINE
+    when: {}
+    priority: P4
+    ticket_type: null
+    action: none
+    reason: "Routine information"
+
+# Pre-LLM lexicon (runs first, < 5 ms). Romanised Hindi, Devanagari and English. Matching is case-insensitive.
+safety_lexicon:
+  medical: [ambulance, behosh, "बेहोश", unconscious, accident, bleeding, "khoon", heart attack, "saans nahi"]
+  harassment: [ragging, "रैगिंग", harass, "pareshan kar rahe", molest, "dhamki", "धमकी", threat]
+  self_harm: [suicide, "आत्महत्या", "khud ko maar", "jaan de", "mar jaunga", "mar jaungi"]
+  violence: [fight, "maar peet", "मारपीट", weapon, knife]
+human_request_lexicon: ["insaan se baat", "kisi se baat", human, "real person", operator, "staff se baat", "press 0"]

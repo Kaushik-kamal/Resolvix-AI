@@ -1,0 +1,34 @@
+openapi: 3.1.0
+info:
+  title: Resolvix voice-runtime (owned by Member A)
+  version: 1.0.0
+  description: |
+    Hosts the Agora custom-LLM shim and imports the brain package in-process.
+    Base URL (dev): http://localhost:8000 ; Agora needs it on public HTTPS (cloudflared/ngrok).
+servers: [{url: "http://localhost:8000"}]
+paths:
+  /v1/chat/completions:
+    post:
+      summary: OpenAI-compatible streaming endpoint called by the Agora Conversational AI Engine
+      description: |
+        Auth: Authorization: Bearer {SHIM_API_KEY}. Query param call_id (set when A starts the agent).
+        Request: see contracts/fixtures/agora/chat_request.json. Unknown fields are ignored. stream=false -> 400.
+        Response: text/event-stream. First chunk object=chat.completion.custom_metadata carrying {interruptable} from the
+        brain MetaEvent, then chat.completion.chunk deltas with speech text, then a finish chunk and `data: [DONE]`.
+        Never returns a non-200 mid-call: internal failures stream the fallback line (brain guarantees this).
+      responses: {"200": {description: SSE stream (see fixtures/agora/expected_sse_for_04.txt)}}
+  /api/sessions/web:
+    post:
+      summary: Start a browser test call. Creates channel + tokens, starts the Agora agent with llm.url carrying call_id.
+      responses: {"200": {description: "{app_id, channel, rtc_token, uid, call_id}"}}
+  /api/test/turn:
+    post:
+      summary: Typed-input fallback (demo backup). Body {call_id?, text}. Runs the same pipeline without audio.
+      responses: {"200": {description: "{call_id, events: BrainEvent[] (placeholders substituted), spoken_text}"}}
+  /admin/kb/reload:
+    post:
+      summary: Called by C's /v1/kb/publish. Body KBSource. Calls brain.reload_kb().
+      responses: {"200": {description: KBVersionInfo}, "422": {description: ErrorEnvelope (compile failed; details list problems)}}
+  /healthz:
+    get:
+      responses: {"200": {description: "{status, brain: Brain.health(), ops_api: ok|down, agora: ok|down|mock}"}}

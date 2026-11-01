@@ -1,0 +1,115 @@
+{
+  "$defs": {
+    "CallChannel": {
+      "enum": [
+        "pstn",
+        "web",
+        "test"
+      ],
+      "title": "CallChannel",
+      "type": "string"
+    },
+    "TicketRef": {
+      "additionalProperties": false,
+      "properties": {
+        "ticket_id": {
+          "title": "Ticket Id",
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/TicketType"
+        },
+        "status": {
+          "$ref": "#/$defs/TicketStatus"
+        },
+        "department": {
+          "title": "Department",
+          "type": "string"
+        },
+        "summary": {
+          "title": "Summary",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ticket_id",
+        "type",
+        "status",
+        "department",
+        "summary",
+        "created_at"
+      ],
+      "title": "TicketRef",
+      "type": "object"
+    },
+    "TicketStatus": {
+      "enum": [
+        "open",
+        "in_progress",
+        "resolved",
+        "closed"
+      ],
+      "title": "TicketStatus",
+      "type": "string"
+    },
+    "TicketType": {
+      "enum": [
+        "EMERGENCY",
+        "URGENT",
+        "KNOWLEDGE_GAP",
+        "COMPLAINT",
+        "HUMAN_REQUEST",
+        "SYSTEM_FAILURE"
+      ],
+      "title": "TicketType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "call_id": {
+      "title": "Call Id",
+      "type": "string"
+    },
+    "channel": {
+      "$ref": "#/$defs/CallChannel"
+    },
+    "caller_number": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Caller Number"
+    },
+    "started_at": {
+      "format": "date-time",
+      "title": "Started At",
+      "type": "string"
+    },
+    "open_tickets": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/TicketRef"
+      },
+      "title": "Open Tickets",
+      "type": "array"
+    }
+  },
+  "required": [
+    "call_id",
+    "channel",
+    "started_at"
+  ],
+  "title": "CallContext",
+  "type": "object"
+}

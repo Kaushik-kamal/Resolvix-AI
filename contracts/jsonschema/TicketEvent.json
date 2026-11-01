@@ -1,0 +1,46 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "kind": {
+      "enum": [
+        "transfer_attempted",
+        "transfer_connected",
+        "transfer_failed",
+        "sms_queued",
+        "sms_sent",
+        "sms_failed",
+        "sms_suppressed",
+        "status_changed",
+        "note_added",
+        "callback_scheduled",
+        "brief_pushed"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "payload": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "default": {},
+      "title": "Payload",
+      "type": "object"
+    },
+    "actor": {
+      "default": "system",
+      "title": "Actor",
+      "type": "string"
+    },
+    "at": {
+      "format": "date-time",
+      "title": "At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "kind",
+    "at"
+  ],
+  "title": "TicketEvent",
+  "type": "object"
+}

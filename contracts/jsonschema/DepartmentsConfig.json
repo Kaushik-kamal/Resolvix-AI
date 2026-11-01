@@ -1,0 +1,140 @@
+{
+  "$defs": {
+    "Department": {
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "ticket_prefix": {
+          "pattern": "^[A-Z]{2}$",
+          "title": "Ticket Prefix",
+          "type": "string"
+        },
+        "transfer_numbers": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Transfer Numbers",
+          "type": "array"
+        },
+        "sms_alert_numbers": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Sms Alert Numbers",
+          "type": "array"
+        },
+        "hours": {
+          "items": {
+            "$ref": "#/$defs/OfficeHours"
+          },
+          "title": "Hours",
+          "type": "array"
+        },
+        "topics": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Topics",
+          "type": "array"
+        },
+        "mvp": {
+          "default": true,
+          "title": "Mvp",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "key",
+        "name",
+        "ticket_prefix",
+        "transfer_numbers",
+        "hours"
+      ],
+      "title": "Department",
+      "type": "object"
+    },
+    "OfficeHours": {
+      "additionalProperties": false,
+      "properties": {
+        "days": {
+          "items": {
+            "enum": [
+              "mon",
+              "tue",
+              "wed",
+              "thu",
+              "fri",
+              "sat",
+              "sun"
+            ],
+            "type": "string"
+          },
+          "title": "Days",
+          "type": "array"
+        },
+        "open": {
+          "pattern": "^\\d{2}:\\d{2}$",
+          "title": "Open",
+          "type": "string"
+        },
+        "close": {
+          "pattern": "^\\d{2}:\\d{2}$",
+          "title": "Close",
+          "type": "string"
+        }
+      },
+      "required": [
+        "days",
+        "open",
+        "close"
+      ],
+      "title": "OfficeHours",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "timezone": {
+      "default": "Asia/Kolkata",
+      "title": "Timezone",
+      "type": "string"
+    },
+    "default_department": {
+      "title": "Default Department",
+      "type": "string"
+    },
+    "emergency": {
+      "additionalProperties": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "title": "Emergency",
+      "type": "object"
+    },
+    "departments": {
+      "items": {
+        "$ref": "#/$defs/Department"
+      },
+      "title": "Departments",
+      "type": "array"
+    }
+  },
+  "required": [
+    "default_department",
+    "emergency",
+    "departments"
+  ],
+  "title": "DepartmentsConfig",
+  "type": "object"
+}

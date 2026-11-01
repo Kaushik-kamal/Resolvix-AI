@@ -1,0 +1,47 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "message_id": {
+      "title": "Message Id",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "queued",
+        "sent",
+        "delivered",
+        "failed",
+        "suppressed"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "live",
+        "mock"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Reason"
+    }
+  },
+  "required": [
+    "message_id",
+    "status",
+    "mode"
+  ],
+  "title": "SmsResult",
+  "type": "object"
+}

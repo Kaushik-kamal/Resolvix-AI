@@ -1,0 +1,9 @@
+{
+  "kind": "transfer_failed",
+  "payload": {
+    "to_number": "+910000000101",
+    "reason": "no_answer_20s"
+  },
+  "actor": "system",
+  "at": "2026-10-23T10:15:00+05:30"
+}

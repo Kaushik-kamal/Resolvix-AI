@@ -1,0 +1,12 @@
+{
+  "_comment": "What the Agora Conversational AI Engine POSTs to A's shim. URL used: POST {PUBLIC_BASE_URL}/v1/chat/completions?call_id=call-urgent-exam. The call_id query param is set by A when it starts the agent (fallback: a system message 'RESOLVIX_CALL_ID=<id>'; see Spike S1). Extra fields Agora may send (context, tools, modalities, stream_options) must be accepted and ignored.",
+  "model": "resolvix-brain",
+  "stream": true,
+  "messages": [
+    {"role": "system", "content": "RESOLVIX_CALL_ID=call-urgent-exam"},
+    {"role": "assistant", "content": "Namaste, aap college helpline par hain. Main AI sahayak hoon, yeh call record ho sakti hai. Batayiye, kya madad karun?"},
+    {"role": "user", "content": "Exam 15 minute mein hai, room nahi mil raha!"},
+    {"role": "assistant", "content": "Ye urgent lag raha hai. Aapka roll number aur paper ka naam batayiye."},
+    {"role": "user", "content": "Roll number 2400271549999, paper Data Structures."}
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "$defs": {
+    "TicketStatus": {
+      "enum": [
+        "open",
+        "in_progress",
+        "resolved",
+        "closed"
+      ],
+      "title": "TicketStatus",
+      "type": "string"
+    },
+    "TicketType": {
+      "enum": [
+        "EMERGENCY",
+        "URGENT",
+        "KNOWLEDGE_GAP",
+        "COMPLAINT",
+        "HUMAN_REQUEST",
+        "SYSTEM_FAILURE"
+      ],
+      "title": "TicketType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "ticket_id": {
+      "title": "Ticket Id",
+      "type": "string"
+    },
+    "type": {
+      "$ref": "#/$defs/TicketType"
+    },
+    "status": {
+      "$ref": "#/$defs/TicketStatus"
+    },
+    "department": {
+      "title": "Department",
+      "type": "string"
+    },
+    "summary": {
+      "title": "Summary",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "ticket_id",
+    "type",
+    "status",
+    "department",
+    "summary",
+    "created_at"
+  ],
+  "title": "TicketRef",
+  "type": "object"
+}

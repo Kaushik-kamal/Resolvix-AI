@@ -1,0 +1,8 @@
+# OWNER: Member C (ops). Templates must match DLT-registered templates before real Indian SMS is sent.
+# Until DLT approval: send from a clearly labelled TEST sender or run NOTIFY_MODE=mock. Never put marks, dues, or name+roll in SMS.
+templates:
+  ticket_created: "College Helpline: your request {ticket_id} has been registered with {dept}. You will be contacted soon."
+  status_change: "College Helpline: request {ticket_id} is now {status}."
+  answer_copy: "College Helpline: {summary} Source: {source}. Official link: {url}"
+  staff_alert: "RESOLVIX ALERT: {ticket_id} {summary}. Open dashboard for brief."
+allowed_url_prefixes: ["https://college.example/"]   # only whitelisted URLs may appear in SMS

@@ -1,0 +1,39 @@
+{
+  "$defs": {
+    "Lang": {
+      "enum": [
+        "hi",
+        "en",
+        "hinglish"
+      ],
+      "title": "Lang",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "kb_version": {
+      "title": "Kb Version",
+      "type": "string"
+    },
+    "greeting_text": {
+      "title": "Greeting Text",
+      "type": "string"
+    },
+    "greeting_lang": {
+      "$ref": "#/$defs/Lang"
+    },
+    "interruptable": {
+      "default": false,
+      "title": "Interruptable",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "kb_version",
+    "greeting_text",
+    "greeting_lang"
+  ],
+  "title": "CallStartPlan",
+  "type": "object"
+}

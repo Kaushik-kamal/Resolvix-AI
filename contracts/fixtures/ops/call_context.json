@@ -1,0 +1,7 @@
+{
+  "call_id": "call-urgent-exam",
+  "channel": "pstn",
+  "caller_number": "+919000000002",
+  "started_at": "2026-10-23T10:15:00+05:30",
+  "open_tickets": []
+}

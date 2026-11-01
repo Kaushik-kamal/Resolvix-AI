@@ -1,0 +1,61 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "cluster_id": {
+      "title": "Cluster Id",
+      "type": "string"
+    },
+    "label": {
+      "title": "Label",
+      "type": "string"
+    },
+    "department": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Department"
+    },
+    "count": {
+      "title": "Count",
+      "type": "integer"
+    },
+    "examples": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Examples",
+      "type": "array"
+    },
+    "last_seen": {
+      "format": "date-time",
+      "title": "Last Seen",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "new",
+        "needs_document",
+        "answered",
+        "ignored"
+      ],
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "cluster_id",
+    "label",
+    "department",
+    "count",
+    "examples",
+    "last_seen",
+    "status"
+  ],
+  "title": "GapCluster",
+  "type": "object"
+}
