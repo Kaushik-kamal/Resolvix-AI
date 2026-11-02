@@ -229,4 +229,24 @@ describe("Rules page", () => {
     expect(screen.getByText("Agent could not answer because of a system failure")).toBeInTheDocument();
     expect(screen.getByText("Human request exclusions")).toBeInTheDocument(); // extra top-level key, no crash
   });
+
+  it("renders safety_exclusions as its own collapsible section next to human_request_exclusions", async () => {
+    mockFetch({
+      "GET /v1/urgency-rules": {
+        version: 1,
+        rules: [{ id: "R-ROUTINE", when: {}, priority: "P4", ticket_type: null, department: "from_topic", action: "answer" }],
+        safety_lexicon: { en: ["fire"] },
+        human_request_lexicon: ["operator"],
+        human_request_exclusions: ["human resource"],
+        safety_exclusions: ["fire exit", "fire drill", "fire safety"],
+      },
+      "GET /v1/departments": DEPARTMENTS,
+    });
+    renderWithProviders(<RulesPage />);
+    const summary = await screen.findByText("Safety exclusions");
+    expect(summary.tagName).toBe("SUMMARY");
+    expect(summary.closest("details")).not.toBeNull();
+    expect(screen.getByText("Human request exclusions").tagName).toBe("SUMMARY");
+    expect(within(summary.closest("details") as HTMLElement).getByText("fire exit")).toBeInTheDocument();
+  });
 });
