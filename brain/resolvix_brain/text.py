@@ -35,9 +35,31 @@ def tokens(text: str) -> list[str]:
 _LONG_DIGITS = re.compile(r"(?<![\d])\+?\d(?:[\s\-]?\d){9,}(?![\d])")
 
 
+# A labelled student identifier ("roll number 2101234", "enrollment no. 21-0123", "रोल नंबर 2101234"): the value is
+# masked whatever its length. Room numbers (<= 4 digits, "Block B room 214") and 6-digit PIN codes are not identifiers.
+_ID_LABEL = (r"(?:roll|rollno|enrol+ment|enrolment|registration|reg|admission|student\s*id|sap|uid|"
+             r"रोल|एनरोलमेंट|रजिस्ट्रेशन)")
+_ID_FILLER = r"(?:\s+(?:number|no|num|nbr|nmbr|id|is|hai|hain|ka|ki|mera|meri|my|नंबर|नं|है)\.?)*"
+_LABELLED_ID = re.compile(rf"(?i)\b({_ID_LABEL}\.?{_ID_FILLER}\s*[:#.\-]?\s*)([A-Za-z]{{0,4}}\d[\w\-]*(?:[ \-]\d+)*)")
+_BARE_ID = re.compile(r"(?<![\d])\d{7,9}(?![\d])")      # 7-9 digits (10+ are handled as phone/roll numbers)
+_INTRO = re.compile(r"(?i)\b(?:mera|meri)\s+(?:naam|nam|name)\b|\bmy\s+name\b|\bnaam\s+(?:hai|h)\b|मेरा\s+नाम")
+
+
+def _mask_labelled(m: re.Match) -> str:
+    return m.group(1) + ("[REDACTED]" if sum(c.isdigit() for c in m.group(2)) >= 3 else m.group(2))
+
+
 def redact(text: str) -> str:
-    """Mask phone and roll numbers (any run of >= 10 digits, optionally spaced or hyphenated)."""
-    return _LONG_DIGITS.sub("[REDACTED]", (text or "").translate(_DEVA_DIGITS))
+    """Mask phone numbers, roll numbers and student identifiers: runs of >= 10 digits (optionally spaced or hyphenated),
+    7-9 digit runs, and the value after a label such as "roll number" / "enrollment no"."""
+    t = _LONG_DIGITS.sub("[REDACTED]", (text or "").translate(_DEVA_DIGITS))
+    return _BARE_ID.sub("[REDACTED]", _LABELLED_ID.sub(_mask_labelled, t))
+
+
+def looks_like_identity(text: str) -> bool:
+    """A self-introduction or an identifier statement ("mera naam Rahul, roll number 2101234"): never a place name."""
+    return bool(_INTRO.search(text or "") or _LABELLED_ID.search((text or "").translate(_DEVA_DIGITS)) or _BARE_ID.search(
+        (text or "").translate(_DEVA_DIGITS)))
 
 
 # ------------------------------------------------------------------ phone / roll extraction

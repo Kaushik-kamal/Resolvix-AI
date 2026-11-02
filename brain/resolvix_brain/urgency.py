@@ -18,7 +18,7 @@ from typing import Any
 from resolvix_contracts.models import UrgencyFacts
 
 from .speech import _ONES, _MULT  # number words
-from .text import normalize, tokens
+from .text import normalize, redact, tokens
 
 _MIN_UNITS = frozenset("minute minutes min mins mint minat मिनट".split())
 _HOUR_UNITS = frozenset("hour hours hr hrs ghante ghanta ghanta घंटे घंटा".split())
@@ -167,7 +167,7 @@ _LOCATION = re.compile(
 
 def extract_location(text: str) -> str | None:
     """'Block B room 214' style location from free text."""
-    t = text or ""
+    t = redact(text or "")      # "roll no 2101" must not look like a room code
     m = _LOCATION.search(t)
     if not m:
         m2 = re.search(r"\b([A-Za-z]{1,2}[-\s]?\d{2,4})\b", t)

@@ -39,7 +39,7 @@ must not be confused with, Member A's runtime.
 | caller number only from `CallContext` | `test_caller_number_comes_from_call_context_only` |
 | KB publish over real HTTP, drafts/expired/injected excluded, live calls keep their version, bad source keeps the old KB | `test_kb_reload_from_a_url_like_the_ops_publish_flow` |
 | unknown question -> gap + ticket + SMS only after the caller agrees | `test_unknown_question_creates_gap_ticket_and_sms_after_confirmation` |
-| frozen SMS-key limitation | `test_second_ticket_in_one_call_does_not_get_a_second_sms_because_of_the_frozen_key_format` |
+| frozen SMS-key limitation (CR-7) | `tests/test_sms_dedup.py`, `tests/test_turn_rollback.py`; `test_second_ticket_in_one_call_requests_no_second_sms_and_never_posts_a_duplicate` |
 | expired entries not served after midnight, daily refresh | `tests/test_expiry_rollover.py` (4 tests) |
 
 Run them:
@@ -49,7 +49,7 @@ cd D:\hackathon\resolvix\team-package\resolvix\brain
 .venv\Scripts\Activate.ps1
 $env:PYTHONUTF8 = "1"
 pytest -m mocked_integration -v          # 19 tests, ~3 s, no network, no key
-pytest -q                                # everything: 415 tests (405 offline + 10 that load the real e5 model)
+pytest -q                                # everything: 493 tests (483 offline + 10 that load the real e5 model; the two selections do not overlap)
 ```
 
 ## 3. Genuine end-to-end plan (to be executed by Member A with B and C present)

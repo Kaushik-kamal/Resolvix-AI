@@ -165,6 +165,7 @@ class ResolvixBrain:
         self.turns_total += 1
         orig: Session | None = None
         work: Session | None = None
+        failed_lang: Lang | None = None
         plan: Plan
         try:
             await self.ready()
@@ -177,11 +178,16 @@ class ResolvixBrain:
             raise
         except Exception as exc:  # never raise to Member A
             log.exception("turn failed: %s", type(exc).__name__)
+            # The fallback is *spoken* from the half-planned copy (so it keeps the language detected this turn), but what is
+            # committed is a fresh copy of the session as it was before the turn: whatever the failed planning changed
+            # (flow state, SMS keys recorded by sms_action, ...) is rolled back with the discarded plan.
             plan = self._safe_fallback(work or orig, req, ["internal_error", type(exc).__name__], t0)
-            if work is None and orig is not None:
+            failed_lang = work.lang if work is not None else None
+            if orig is not None:
                 work = orig.clone()
+                work.deferred = []
         plan.latency["brain_total"] = _ms(t0)
-        lang = Lang(work.lang) if work is not None else Lang.hinglish
+        lang = Lang(failed_lang or work.lang) if work is not None else Lang.hinglish
         committed = False
         spoken: list[str] = []
         pending_deferred = list(orig.deferred) if orig is not None else []

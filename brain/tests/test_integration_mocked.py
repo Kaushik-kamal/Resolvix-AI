@@ -314,12 +314,15 @@ async def test_all_posted_payloads_validate_against_the_frozen_contract(brain):
         TurnSummary.model_validate(row)
 
 
-async def test_second_ticket_in_one_call_does_not_get_a_second_sms_because_of_the_frozen_key_format(brain):
-    """sms_idempotency_key(call_id, template, to_number) has no ticket/turn component, so ops dedupes the 2nd
-    'ticket_created' SMS of a call to the same number. Documented as CR-7; the Brain follows the frozen helper."""
+async def test_second_ticket_in_one_call_requests_no_second_sms_and_never_posts_a_duplicate(brain):
+    """sms_idempotency_key(call_id, template, to_number) has no ticket/turn component (CR-7). The Brain remembers the
+    SMS it requested in this call, so ops is never asked twice (no duplicate POST) and the caller is not told a text
+    is coming for the second ticket."""
     rt, ops, tel = stack(brain)
     await rt.start_call("it-s2", "+919000000004")
+    spoken = []
     for t in ["Hostel ka wifi do din se nahi chal raha", "Block B room 214", "haan", "haan sahi hai",
               "Noida sector 62 ke liye bus route kya hai?", "haan"]:
-        await rt.turn("it-s2", t, received_at=T_OPEN)
-    assert len(ops.tickets) == 2 and len(ops.sms) == 1 and ops.sms_duplicates == ["it-s2:ticket_created:+919000000004"]
+        spoken.append(" ".join((await rt.turn("it-s2", t, received_at=T_OPEN)).spoken))
+    assert len(ops.tickets) == 2 and len(ops.sms) == 1 and ops.sms_duplicates == []
+    assert "SMS" in spoken[3] and "SMS" not in spoken[5]
