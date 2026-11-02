@@ -117,3 +117,13 @@ describe("SLA targets", () => {
     expect(late.remainingSeconds).toBe(-180);
   });
 });
+
+import { ticketTypeLabel } from "./format";
+describe("ticketTypeLabel", () => {
+  it("makes SYSTEM_FAILURE readable and keeps unknown types as plain text", () => {
+    expect(ticketTypeLabel("SYSTEM_FAILURE")).toBe("System failure");
+    expect(ticketTypeLabel("KNOWLEDGE_GAP")).toBe("Knowledge gap");
+    expect(ticketTypeLabel("SOMETHING_NEW")).toBe("Something new");
+    expect(ticketTypeLabel(null)).toBe("—");
+  });
+});

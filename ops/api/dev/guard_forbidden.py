@@ -2,6 +2,7 @@
 
 Run with: python -X utf8 dev/guard_forbidden.py [--init]
 """
+import fnmatch
 import hashlib
 import json
 import sys
@@ -25,28 +26,22 @@ EXCLUDE_PATTERNS = [
     "__pycache__",
     "*.pyc",
     ".pytest_cache",
+    ".venv",
+    "node_modules",
 ]
 
 
+CRLF, LF = bytes([13, 10]), bytes([10])
+
+
 def should_exclude(path: Path) -> bool:
-    """Check if path matches exclude patterns."""
-    path_str = str(path)
-    for pattern in EXCLUDE_PATTERNS:
-        if pattern.startswith("*"):
-            if path_str.endswith(pattern[1:]):
-                return True
-        elif pattern in path_str:
-            return True
-    return False
+    """True when any component of the path matches an exclude pattern (*.egg-info, __pycache__, ... anywhere)."""
+    return any(fnmatch.fnmatch(part, pattern) for part in path.parts for pattern in EXCLUDE_PATTERNS)
 
 
 def compute_file_hash(file_path: Path) -> str:
-    """Compute SHA256 hash of a file."""
-    sha256 = hashlib.sha256()
-    with open(file_path, "rb") as f:
-        for chunk in iter(lambda: f.read(8192), b""):
-            sha256.update(chunk)
-    return sha256.hexdigest()
+    """SHA256 of a file with CRLF folded to LF, so a Windows checkout (autocrlf) and a Linux one agree."""
+    return hashlib.sha256(file_path.read_bytes().replace(CRLF, LF)).hexdigest()
 
 
 def scan_paths(base_dir: Path) -> dict[str, str]:
@@ -57,17 +52,17 @@ def scan_paths(base_dir: Path) -> dict[str, str]:
         full_path = base_dir / forbidden_path
         
         if not full_path.exists():
-            continue  # Path doesn't exist yet (e.g., voice-runtime, brain)
+            continue  # absent in this checkout (e.g. a fresh clone without voice-runtime): nothing to guard
         
         if full_path.is_file():
             if not should_exclude(full_path):
-                relative = str(full_path.relative_to(base_dir))
+                relative = full_path.relative_to(base_dir).as_posix()
                 manifest[relative] = compute_file_hash(full_path)
         else:
             # Directory - walk all files
             for file_path in full_path.rglob("*"):
                 if file_path.is_file() and not should_exclude(file_path):
-                    relative = str(file_path.relative_to(base_dir))
+                    relative = file_path.relative_to(base_dir).as_posix()
                     manifest[relative] = compute_file_hash(file_path)
     
     return manifest

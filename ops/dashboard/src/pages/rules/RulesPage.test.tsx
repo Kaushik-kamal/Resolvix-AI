@@ -203,4 +203,30 @@ describe("Rules page", () => {
     renderWithProviders(<RulesPage />);
     expect(await screen.findByText("No departments")).toBeInTheDocument();
   });
+
+  it("renders R-FALLBACK and the human_request_exclusions section from the current urgency_rules.yaml", async () => {
+    mockFetch({
+      "GET /v1/urgency-rules": {
+        version: 1,
+        rules: [
+          {
+            id: "R-FALLBACK", when: { intent: "system_failure" }, priority: "P3", ticket_type: "SYSTEM_FAILURE",
+            department: "from_topic_or_default", action: "ticket_and_callback",
+            reason: "Agent could not answer because of a system failure",
+          },
+          { id: "R-ROUTINE", when: {}, priority: "P4", ticket_type: null, department: "from_topic", action: "answer" },
+        ],
+        safety_lexicon: { en: ["ambulance"] },
+        human_request_lexicon: ["operator"],
+        human_request_exclusions: ["human resource", "humanities"],
+      },
+      "GET /v1/departments": DEPARTMENTS,
+    });
+    renderWithProviders(<RulesPage />);
+    expect(await screen.findByText("R-FALLBACK")).toBeInTheDocument();
+    expect(screen.getByText("ticket_and_callback")).toBeInTheDocument();   // unknown action shown as plain text
+    expect(screen.getByText("System failure")).toBeInTheDocument();         // readable ticket type
+    expect(screen.getByText("Agent could not answer because of a system failure")).toBeInTheDocument();
+    expect(screen.getByText("Human request exclusions")).toBeInTheDocument(); // extra top-level key, no crash
+  });
 });

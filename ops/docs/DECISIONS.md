@@ -161,3 +161,6 @@ Contract (ops-api.yaml + resolvix_contracts) is the source of truth. Every diffe
 77. **Login** (M9): plain def (threadpool), a bcrypt comparison also for unknown emails, limiter on failed attempts per (ip, email) plus 6x that per ip for all attempts, 429 rate_limited with Retry-After.
 78. **Gap POST idempotency**: not implemented. GapCreate has no idempotency key in the contract, so a retry by A counts twice; documented, not required.
 79. **Docs routes** (/docs, /redoc, /openapi.json) exist only when OPS_PUBLIC_URL is localhost. Ticket ids stop at 9999 with a 500 rather than breaking the contract pattern.
+
+80. **Forbidden manifest regenerated after PR #1 (Member B), by agreement.** brain/ and the extended contracts/config/urgency_rules.yaml are now the legitimate baseline. guard_forbidden.py also ignores *.egg-info, __pycache__, .venv and node_modules at any depth, skips forbidden paths that are absent in a fresh clone, uses forward-slash keys and hashes with CRLF folded to LF so Windows and Linux checkouts agree.
+81. **Ticket type label**: the dashboard shows ticket types as plain readable text (SYSTEM_FAILURE -> "System failure"); the Rules page renders unknown rule actions, ticket types and extra top-level keys of urgency_rules.yaml (e.g. human_request_exclusions) generically.

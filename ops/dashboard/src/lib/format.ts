@@ -134,6 +134,13 @@ export function humanize(value: string | null | undefined): string {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
+/** Ticket type for people: SYSTEM_FAILURE -> "System failure"; an unknown type still reads as plain text. */
+export function ticketTypeLabel(value: string | null | undefined): string {
+  if (!value) return "—";
+  const text = value.replace(/[_-]+/g, " ").trim().toLowerCase();
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
 /** 1234 -> "1,234" (en-IN grouping is not used: counts here are small). */
 export function formatCount(value: number | null | undefined): string {
   if (value === null || value === undefined || !Number.isFinite(value)) return "—";

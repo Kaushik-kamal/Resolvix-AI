@@ -4,7 +4,7 @@ import { useMemo, type ReactNode } from "react";
 import { api, qk } from "../../api";
 import type { Department, DepartmentsConfig } from "../../api/types";
 import { DataTable, MaskedNumber, PageHeader, Panel, PriorityBadge, type Column } from "../../components";
-import { humanize } from "../../lib/format";
+import { humanize, ticketTypeLabel } from "../../lib/format";
 import {
   describeValue,
   formatHours,
@@ -124,7 +124,7 @@ function UrgencyRulesSection() {
           </ul>
         ),
     },
-    { key: "ticket_type", header: "Ticket type", cell: (r) => r.ticketType ?? <span className="text-ink-faint">None</span> },
+    { key: "ticket_type", header: "Ticket type", cell: (r) => (r.ticketType ? ticketTypeLabel(r.ticketType) : null) ?? <span className="text-ink-faint">None</span> },
     {
       key: "department",
       header: "Department",

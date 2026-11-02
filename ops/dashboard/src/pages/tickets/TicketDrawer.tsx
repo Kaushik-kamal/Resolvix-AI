@@ -15,7 +15,7 @@ import {
   errorMessage,
 } from "../../components";
 import { useReveal } from "../../hooks/useReveal";
-import { formatDateTime, humanize } from "../../lib/format";
+import { formatDateTime, humanize, ticketTypeLabel } from "../../lib/format";
 import { buildTicketDraftSeed, KB_DRAFT_STATE_KEY } from "../kb/draftSeed";
 import { buildStatusPatch, canDraftFromResolution, extractResolution, mayTriggerSms, parseNote, parsePriorityReason, TICKET_STATUSES } from "./ticketLogic";
 import { TicketTimeline } from "./TicketTimeline";
@@ -231,7 +231,7 @@ export function TicketDrawer({ ticketId, onClose, knownAssignees = [] }: TicketD
 
         <Section title="Details">
           <dl className="grid grid-cols-3 gap-x-4 gap-y-2">
-            <Field label="Type">{humanize(ticket.type)}</Field>
+            <Field label="Type">{ticketTypeLabel(ticket.type)}</Field>
             <Field label="Department">{humanize(ticket.department)}</Field>
             <Field label="Assignee">{ticket.assignee || "Unassigned"}</Field>
             <Field label="Created">{formatDateTime(ticket.created_at)}</Field>
@@ -426,7 +426,7 @@ export function TicketDrawer({ ticketId, onClose, knownAssignees = [] }: TicketD
       onClose={onClose}
       size="lg"
       title={ticketId}
-      subtitle={ticket ? `${humanize(ticket.department)} · ${humanize(ticket.type)}` : undefined}
+      subtitle={ticket ? `${humanize(ticket.department)} · ${ticketTypeLabel(ticket.type)}` : undefined}
       headerExtra={
         ticket ? (
           <>
