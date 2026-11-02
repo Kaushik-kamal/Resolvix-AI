@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resolvix — Typed Test Console (Member A Demo Backup)</title>
+  <style>
+    :root {
+      --bg: #F4EFEA;
+      --card-bg: #FFFFFF;
+      --text: #2A2521;
+      --text-muted: #525A63;
+      --header-bg: #5E4330;
+      --accent: #A97B49;
+      --accent-hover: #7A5A40;
+      --border: #DCD4CA;
+      --p1: #B5603F;
+      --p2: #A97B49;
+      --p3: #6F8592;
+      --p4: #9CA9B1;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+    header { background-color: var(--header-bg); color: #FFF; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    header h1 { font-size: 1.25rem; font-weight: 600; }
+    header .status-badge { font-size: 0.85rem; padding: 4px 10px; border-radius: 999px; background: rgba(255,255,255,0.15); }
+    .container { max-width: 1200px; margin: 20px auto; padding: 0 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1; }
+    @media (max-width: 860px) { .container { grid-template-columns: 1fr; } }
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 12px; color: var(--header-bg); display: flex; justify-content: space-between; align-items: center; }
+    .scenarios-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-bottom: 16px; }
+    .scenario-btn { background: #EFE8E0; border: 1px solid var(--border); padding: 8px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: 500; cursor: pointer; text-align: left; transition: all 0.2s; color: var(--text); }
+    .scenario-btn:hover { background: #E5DCCE; border-color: var(--accent); }
+    .scenario-btn span { display: block; font-size: 0.68rem; color: var(--text-muted); margin-top: 2px; }
+    .input-group { display: flex; gap: 8px; margin-top: 12px; }
+    input[type="text"] { flex: 1; padding: 10px 14px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; }
+    input[type="text"]:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(169,123,73,0.2); }
+    button.primary { background: var(--accent); color: #fff; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    button.primary:hover { background: var(--accent-hover); }
+    button.secondary { background: #EAE3D9; color: var(--text); border: 1px solid var(--border); padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; }
+    button.secondary:hover { background: #DFD7CB; }
+    .chat-transcript { flex: 1; min-height: 280px; max-height: 400px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; padding: 14px; background: #FAF7F4; display: flex; flex-direction: column; gap: 12px; }
+    .msg { max-width: 82%; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; line-height: 1.4; word-break: break-word; }
+    .msg.user { align-self: flex-end; background: #5E4330; color: #FFF; border-bottom-right-radius: 2px; }
+    .msg.agent { align-self: flex-start; background: #EFE8E0; color: var(--text); border: 1px solid var(--border); border-bottom-left-radius: 2px; }
+    .events-stream { flex: 1; min-height: 380px; max-height: 520px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; padding: 12px; background: #1E1E1E; color: #D4D4D4; font-family: "SFMono-Regular", Consolas, monospace; font-size: 0.78rem; line-height: 1.45; }
+    .event-line { margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #333; }
+    .tag { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; margin-right: 6px; }
+    .tag-meta { background: #264F78; color: #FFF; }
+    .tag-action { background: #7C4DFF; color: #FFF; }
+    .tag-speech { background: #2E7D32; color: #FFF; }
+    .tag-done { background: #E65100; color: #FFF; }
+    .call-meta-bar { display: flex; justify-content: space-between; align-items: center; background: #EFE8E0; padding: 8px 12px; border-radius: 6px; margin-bottom: 12px; font-size: 0.82rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Resolvix Helpline — Typed Test Interface (FR-A3)</h1>
+    <div class="status-badge" id="system-status">Checking status...</div>
+  </header>
+
+  <div class="container">
+    <!-- Conversation Column -->
+    <div class="card">
+      <div class="card-title">
+        <span>Caller &amp; Agent Dialogue</span>
+        <button class="secondary" onclick="newCall()">New Call</button>
+      </div>
+
+      <div class="call-meta-bar">
+        <div><strong>Call ID:</strong> <span id="lbl-call-id">—</span></div>
+        <div><strong>Channel:</strong> <span id="lbl-channel">test</span></div>
+      </div>
+
+      <div class="scenarios-grid">
+        <button class="scenario-btn" onclick="sendScenario(1, 'B.Tech ki fees kitni hai aur payment kaise karni hai?')">
+          1. Fees (Hindi)
+          <span>01 FAQ Answer</span>
+        </button>
+        <button class="scenario-btn" onclick="sendScenario(2, 'What is the hostel gate closing time?')">
+          2. Hostel (English)
+          <span>02 LLM Answer</span>
+        </button>
+        <button class="scenario-btn" onclick="sendScenario(3, 'Sector 62 se college aane ke liye bus route kya hai?')">
+          3. Bus Route
+          <span>03 Unknown Ticket</span>
+        </button>
+        <button class="scenario-btn" onclick="sendScenario(4, 'Exam 15 minute mein hai, room nahi mil raha! Roll number 2400271549999, paper Data Structures.')">
+          4. Urgent Exam
+          <span>04 P1 Transfer</span>
+        </button>
+        <button class="scenario-btn" onclick="sendScenario(5, 'Hostel room 302 mein student behosh hai, jaldi ambulance bhejo!')">
+          5. Emergency
+          <span>05 Safety Lexicon</span>
+        </button>
+        <button class="scenario-btn" onclick="sendScenario(6, 'Hostel mein 3 din se WiFi nahi chal raha hai, complaint karni hai.')">
+          6. Complaint
+          <span>06 Confirmed Ticket</span>
+        </button>
+        <button class="scenario-btn" onclick="sendScenario(7, 'Mujhe kisi insaan se baat karni hai, agent se nahi.')">
+          7. Human Request
+          <span>07 Human Hand-off</span>
+        </button>
+        <button class="scenario-btn" onclick="sendScenario(8, 'Trigger system fail test')">
+          8. Failure
+          <span>08 Fallback Line</span>
+        </button>
+        <button class="scenario-btn" onclick="sendScenario(9, 'What is the process for re-evaluation of my exam copy?')">
+          9. Re-eval
+          <span>09 Partial Answer</span>
+        </button>
+      </div>
+
+      <div class="chat-transcript" id="chat-transcript">
+        <div class="msg agent">
+          Namaste, aap college helpline par hain. Main AI sahayak hoon, yeh call record ho sakti hai. Batayiye, kya madad karun?
+        </div>
+      </div>
+
+      <form class="input-group" id="input-form" onsubmit="handleSend(event)">
+        <input type="text" id="user-input" placeholder="Type your query in Hindi, English or Hinglish..." autocomplete="off" />
+        <button type="submit" class="primary" id="btn-send">Send</button>
+      </form>
+    </div>
+
+    <!-- Event Stream & Details Column -->
+    <div class="card">
+      <div class="card-title">
+        <span>Brain &amp; Action Event Stream</span>
+        <button class="secondary" onclick="clearEvents()">Clear Log</button>
+      </div>
+      <div class="events-stream" id="events-stream">
+        <div style="color: #888;">Events received from the voice-runtime pipeline will stream here in real time...</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let activeCallId = "call-test-" + Math.random().toString(16).substring(2, 10);
+    document.getElementById("lbl-call-id").textContent = activeCallId;
+
+    async function checkHealth() {
+      try {
+        const resp = await fetch("/healthz");
+        if (resp.ok) {
+          const data = await resp.json();
+          document.getElementById("system-status").textContent =
+            `Status: ${data.status} | Brain: ${data.brain?.status || 'ok'} | Ops: ${data.ops_api}`;
+        }
+      } catch (e) {
+        document.getElementById("system-status").textContent = "Status: offline";
+      }
+    }
+    checkHealth();
+    setInterval(checkHealth, 10000);
+
+    function newCall() {
+      activeCallId = "call-test-" + Math.random().toString(16).substring(2, 10);
+      document.getElementById("lbl-call-id").textContent = activeCallId;
+      const transcript = document.getElementById("chat-transcript");
+      transcript.innerHTML = `
+        <div class="msg agent">
+          Namaste, aap college helpline par hain. Main AI sahayak hoon, yeh call record ho sakti hai. Batayiye, kya madad karun?
+        </div>
+      `;
+      clearEvents();
+    }
+
+    function clearEvents() {
+      document.getElementById("events-stream").innerHTML = "";
+    }
+
+    function sendScenario(num, text) {
+      document.getElementById("user-input").value = text;
+      handleSend(new Event('submit'));
+    }
+
+    async function handleSend(e) {
+      if (e) e.preventDefault();
+      const input = document.getElementById("user-input");
+      const text = input.value.trim();
+      if (!text) return;
+
+      input.value = "";
+      const transcript = document.getElementById("chat-transcript");
+
+      // Append user msg
+      const userDiv = document.createElement("div");
+      userDiv.className = "msg user";
+      userDiv.textContent = text;
+      transcript.appendChild(userDiv);
+      transcript.scrollTop = transcript.scrollHeight;
+
+      const btn = document.getElementById("btn-send");
+      btn.disabled = true;
+
+      try {
+        const resp = await fetch("/api/test/turn", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ call_id: activeCallId, text: text })
+        });
+
+        if (!resp.ok) {
+          throw new Error("HTTP " + resp.status + ": " + await resp.text());
+        }
+
+        const data = await resp.json();
+        activeCallId = data.call_id;
+        document.getElementById("lbl-call-id").textContent = activeCallId;
+
+        // Render spoken text
+        if (data.spoken_text) {
+          const agentDiv = document.createElement("div");
+          agentDiv.className = "msg agent";
+          agentDiv.textContent = data.spoken_text;
+          transcript.appendChild(agentDiv);
+          transcript.scrollTop = transcript.scrollHeight;
+        }
+
+        // Render event stream
+        const eventStream = document.getElementById("events-stream");
+        if (data.events && data.events.length > 0) {
+          data.events.forEach(ev => {
+            const row = document.createElement("div");
+            row.className = "event-line";
+            const tagClass = "tag-" + (ev.type || "meta");
+            row.innerHTML = `<span class="tag ${tagClass}">${(ev.type || "").toUpperCase()}</span> <span>${JSON.stringify(ev)}</span>`;
+            eventStream.appendChild(row);
+          });
+          eventStream.scrollTop = eventStream.scrollHeight;
+        }
+
+      } catch (err) {
+        const errDiv = document.createElement("div");
+        errDiv.className = "msg agent";
+        errDiv.style.background = "#FFEBEE";
+        errDiv.style.color = "#C62828";
+        errDiv.textContent = "Error: " + err.message;
+        transcript.appendChild(errDiv);
+      } finally {
+        btn.disabled = false;
+        input.focus();
+      }
+    }
+  </script>
+</body>
+</html>

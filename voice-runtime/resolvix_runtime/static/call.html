@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resolvix — Web Voice Call (Agora RTC)</title>
+  <style>
+    :root {
+      --bg: #F4EFEA;
+      --card-bg: #FFFFFF;
+      --text: #2A2521;
+      --header-bg: #5E4330;
+      --accent: #A97B49;
+      --accent-hover: #7A5A40;
+      --danger: #B5603F;
+      --danger-hover: #96482B;
+      --border: #DCD4CA;
+      --success: #2E7D32;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+    header { background-color: var(--header-bg); color: #FFF; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { font-size: 1.25rem; font-weight: 600; }
+    .container { max-width: 680px; margin: 40px auto; padding: 0 16px; flex: 1; width: 100%; }
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); text-align: center; }
+    .card h2 { color: var(--header-bg); margin-bottom: 8px; font-size: 1.5rem; }
+    .card p { color: #666; margin-bottom: 24px; font-size: 0.95rem; }
+    .status-ring { width: 120px; height: 120px; border-radius: 50%; margin: 24px auto; display: flex; align-items: center; justify-content: center; background: #EFE8E0; border: 4px solid var(--border); transition: all 0.3s; }
+    .status-ring.active { border-color: var(--success); background: #E8F5E9; animation: pulse 2s infinite; }
+    .status-ring.connecting { border-color: var(--accent); background: #FFF8E1; }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.4); } 70% { box-shadow: 0 0 0 16px rgba(46, 125, 50, 0); } 100% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0); } }
+    .status-icon { font-size: 2.5rem; }
+    .status-text { font-size: 1.1rem; font-weight: 600; margin-bottom: 24px; }
+    .controls { display: flex; justify-content: center; gap: 16px; margin-bottom: 24px; }
+    button { padding: 12px 28px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; }
+    button.btn-start { background: var(--accent); color: #fff; }
+    button.btn-start:hover { background: var(--accent-hover); }
+    button.btn-end { background: var(--danger); color: #fff; }
+    button.btn-end:hover { background: var(--danger-hover); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .meta-details { text-align: left; background: #FAF7F4; border: 1px solid var(--border); border-radius: 8px; padding: 16px; font-size: 0.85rem; line-height: 1.6; }
+    .meta-details strong { color: var(--header-bg); }
+  </style>
+  <script src="https://download.agora.io/sdk/release/AgoraRTC_N.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Resolvix Helpline — Real-time Web Voice Call</h1>
+    <a href="/test" style="color: #FFF; text-decoration: none; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.3); padding: 4px 12px; border-radius: 4px;">Open Typed Console</a>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <h2>College Voice Helpline</h2>
+      <p>Speak naturally in Hindi, English or Hinglish. Barge in at any time.</p>
+
+      <div class="status-ring" id="status-ring">
+        <span class="status-icon" id="status-icon">🎙️</span>
+      </div>
+      <div class="status-text" id="status-text">Ready to Connect</div>
+
+      <div class="controls">
+        <button class="btn-start" id="btn-start" onclick="startCall()">Start Call</button>
+        <button class="btn-end" id="btn-end" onclick="endCall()" disabled>End Call</button>
+      </div>
+
+      <div class="meta-details">
+        <div><strong>Call ID:</strong> <span id="val-call-id">—</span></div>
+        <div><strong>Channel:</strong> <span id="val-channel">—</span></div>
+        <div><strong>Status:</strong> <span id="val-connection">Idle</span></div>
+        <div style="margin-top: 8px; color: #777; font-size: 0.78rem;">
+          Note: Agora Web SDK connects your microphone directly to the Conversational AI agent. Barge-in interrupts agent speech automatically.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let rtcClient = null;
+    let localAudioTrack = null;
+    let currentCallId = null;
+
+    async function startCall() {
+      const btnStart = document.getElementById("btn-start");
+      const btnEnd = document.getElementById("btn-end");
+      const statusText = document.getElementById("status-text");
+      const statusRing = document.getElementById("status-ring");
+      const valConnection = document.getElementById("val-connection");
+
+      btnStart.disabled = true;
+      statusText.textContent = "Connecting to session...";
+      statusRing.className = "status-ring connecting";
+      valConnection.textContent = "Negotiating token & channel...";
+
+      try {
+        const resp = await fetch("/api/sessions/web", { method: "POST" });
+        if (!resp.ok) throw new Error("Failed to start web session: " + await resp.text());
+        const session = await resp.json();
+
+        currentCallId = session.call_id;
+        document.getElementById("val-call-id").textContent = session.call_id;
+        document.getElementById("val-channel").textContent = session.channel;
+
+        if (typeof AgoraRTC === "undefined") {
+          throw new Error("Agora Web SDK not loaded. Check internet connection.");
+        }
+
+        rtcClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+
+        rtcClient.on("user-published", async (user, mediaType) => {
+          await rtcClient.subscribe(user, mediaType);
+          if (mediaType === "audio") {
+            user.audioTrack.play();
+            statusText.textContent = "Agent is Speaking / Listening";
+            statusRing.className = "status-ring active";
+          }
+        });
+
+        rtcClient.on("user-unpublished", (user, mediaType) => {
+          if (mediaType === "audio") {
+            statusText.textContent = "Listening to you...";
+          }
+        });
+
+        // Join Agora RTC channel
+        await rtcClient.join(
+          session.app_id,
+          session.channel,
+          session.rtc_token || null,
+          session.uid
+        );
+
+        // Capture and publish local microphone
+        localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+        await rtcClient.publish([localAudioTrack]);
+
+        statusText.textContent = "Connected — Speak Now";
+        statusRing.className = "status-ring active";
+        valConnection.textContent = "Live Audio Channel Active";
+        btnEnd.disabled = false;
+
+      } catch (err) {
+        console.error("Call start failed:", err);
+        statusText.textContent = "Connection Error";
+        statusRing.className = "status-ring";
+        valConnection.textContent = err.message;
+        btnStart.disabled = false;
+      }
+    }
+
+    async function endCall() {
+      const btnStart = document.getElementById("btn-start");
+      const btnEnd = document.getElementById("btn-end");
+      const statusText = document.getElementById("status-text");
+      const statusRing = document.getElementById("status-ring");
+      const valConnection = document.getElementById("val-connection");
+
+      btnEnd.disabled = true;
+
+      try {
+        if (localAudioTrack) {
+          localAudioTrack.stop();
+          localAudioTrack.close();
+          localAudioTrack = null;
+        }
+        if (rtcClient) {
+          await rtcClient.leave();
+          rtcClient = null;
+        }
+      } catch (err) {
+        console.error("Error closing RTC connection:", err);
+      }
+
+      statusText.textContent = "Call Ended";
+      statusRing.className = "status-ring";
+      valConnection.textContent = "Disconnected";
+      btnStart.disabled = false;
+    }
+  </script>
+</body>
+</html>
