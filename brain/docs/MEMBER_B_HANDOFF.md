@@ -16,7 +16,7 @@ Brain itself has never talked to the real Groq API.
 
 | Area | State |
 |---|---|
-| Brain library (pipeline, KB compiler, retrieval, safety, urgency, flows, validators, LLM client) | Complete; 339 tests pass |
+| Brain library (pipeline, KB compiler, retrieval, safety, urgency, flows, validators, LLM client) | Complete; 415 tests pass |
 | Frozen contract v1.0.0 | Unchanged; 6 contract tests pass (need `PYTHONUTF8=1` on Windows) |
 | Nine fixture scenarios | Reproduced structurally (10 tests incl. the emergency-alert check) |
 | Clean-venv install | Verified today against the current code |
@@ -33,7 +33,7 @@ brain\.venv\Scripts\Activate.ps1
 $env:PYTHONUTF8 = "1"
 pytest contracts/tests -q                                   # 6 passed
 cd brain
-pytest -q                                                   # 339 passed
+pytest -q                                                   # 415 passed
 pytest -q -m "not realembed"                                # 317 passed, 10 deselected (offline subset)
 pytest -q -m realembed                                      # 10 passed (loads multilingual-e5-small)
 pytest -m mocked_integration -q                             # 19 passed
@@ -71,7 +71,7 @@ set `$env:PYTHONUTF8 = "1"`.
 
 | Finding | Resolution |
 |---|---|
-| Test count differed between messages (296 / 304 / "300+") | explained above; the current exact count is 339 (329 offline + 10 real-model) |
+| Test count differed between messages (296 / 304 / "300+") | explained above; the current exact count is 415 (405 offline + 10 real-model) |
 | **Expired KB entries kept being served after midnight** until someone published | **fixed**: expiry re-checked at answer time (FAQ hit and LLM citation), plus an automatic background recompile on the first turn of a new day (`brain.py::_maybe_refresh`, 4 tests). Small targeted change; no module rewritten |
 | SMS idempotency key (frozen helper) suppresses the second `ticket_created` SMS of a call | not fixable by B (frozen); pinned by a test and logged as CR-7 |
 | Runtime cancellation can lose an action the Brain already delivered | not a Brain bug; documented as CR-8 and demonstrated in the reference runtime (shield + `aclose`) |
@@ -185,4 +185,4 @@ Done in this package only (nothing in Member C's or Member A's files; nothing co
 - `KB_EXPORT_SERVICE_KEY` added (CR-9): fixes the HTTP 401 on `/v1/kb/export`. 10 new tests against a real local HTTP server (valid, missing, invalid, 403, redirect, logging, settings repr, file sources, failed reload keeps the old KB).
 - Complaint flow investigated with a real ops-api: the earlier "incomplete" script was my script's turn order (the flow works as designed), but the trace exposed a real bug (a place-name correction was dropped); fixed with 2 tests.
 - Ticket events: the reference runtime now stamps `at` (frozen `TicketEvent` requires it, ops-api returns 422 without it); the mocked ops validates every event with the frozen model.
-- Test totals now: 339 Brain tests (329 offline + 10 real-model), 6 contract tests.
+- Test totals now: 415 Brain tests (405 offline + 10 real-model), 6 contract tests.

@@ -5,7 +5,7 @@ answers only from the approved knowledge base, never speaks a figure that is not
 deterministic rule table (the LLM only extracts facts), and creates a ticket before any transfer. It does no I/O except the
 LLM and the local embedding model: no HTTP server, database, Agora, SMS or UI (those belong to Members A and C).
 
-Status: implemented and tested against the frozen contract v1.0.0 (339 tests: 329 offline + 10 that load the real embedding model).
+Status: implemented and tested against the frozen contract v1.0.0 (415 tests: 405 offline + 10 that load the real embedding model).
 Start with `docs/MEMBER_B_HANDOFF.md`; integration guides for Members A and C are in `docs/INTEGRATION_EXAMPLES.md`, the test plan in
 `docs/INTEGRATION_TEST_PLAN.md`. Nothing outside the Brain (runtime, ops-api, dashboard, Agora, live Groq) has been exercised. **Not yet exercised against the live Groq API** (no key was
 available): see "Known limitations".
@@ -19,7 +19,7 @@ pip install -e contracts/python -e "brain[dev]"
 $env:PYTHONUTF8 = "1"                       # the frozen contract test reads UTF-8 files without saying so (see docs/CONTRACT_CHANGE_REQUEST.md CR-1)
 pytest contracts/tests -q                   # must be green first (6 tests)
 cd brain
-pytest -q                                   # 339 tests; the first run downloads the e5 model (~470 MB, one time)
+pytest -q                                   # 415 tests; the first run downloads the e5 model (~470 MB, one time)
 pytest -q -m "not realembed"                # offline-only subset (no model download)
 python -m resolvix_brain eval --mock        # scorecard (exit code 2 = deterministic targets met, LLM ones not verified)
 python -m resolvix_brain chat --mock        # interactive REPL, prints each event as JSON plus the spoken text
@@ -87,7 +87,7 @@ degraded (reported by `health()`).
 - `tests/test_fixture_parity.py`: all nine frozen scenarios reproduced from text (real embedder), plus event-order invariants.
 - Other tests: rules and boundaries, every lexicon term, validators and grounding, KB compiler, flows and limits, cancellation,
   concurrency, privacy, failure drills, CLI, ingest.
-- `python -m resolvix_brain eval [--mock]`: sets in `brain/eval/` (answerable 45, abstain 15, urgency 10, safety 20+10, human 10,
+- `python -m resolvix_brain eval [--mock]`: sets in `brain/eval/` (answerable 45, abstain 15, urgency 10, safety 24+14, human 10,
   robustness 10). **These sets are written for the 12-entry sample KB**; rewrite them for the real dataset. In mock mode,
   answerable/abstain are retrieval proxies (the scorecard says so).
 - `tests/test_integration_mocked.py` (19) and `examples/runtime_sim.py`: Brain + a *reference* runtime + in-memory ops, clearly **mocked**; `pytest -m mocked_integration`.
@@ -120,6 +120,6 @@ starting points to calibrate on the real dataset.
 - FAQ margin between true matches and near-misses is narrow on a tiny KB (0.871 vs 0.906); recalibrate on real data.
 - Hindi number words above ~50 (except tens) are not understood by the grounding check; Devanagari reply lines are not
   native-reviewed; barge-in cancellation is tested with generators/tasks, not with Member A's runtime.
-- Safety lexicon is deliberately recall-biased (false alarms such as "fire safety course"); it needs staff review.
+- Safety lexicon is deliberately recall-biased; ordinary phrases containing an ambiguous word ("fire exit", "sexual harassment committee") are listed in `safety_exclusions` and never suppress a clear emergency in the same sentence. Both lists need staff review.
 - Personal-record questions (dues, marks, attendance) are only declined, never answered (no verification, no ERP).
 - The brain keeps call state in memory: a Brain process restart loses live dialogue state (calls fall back to fresh sessions).

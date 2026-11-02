@@ -51,7 +51,22 @@ Impact is small (the caller still hears the second ticket id) but the second tic
 ticket `HS-1008` and then a human-request ticket `HD-1009` in one call to one number. ops-api stored **one** SMS row
 (`cr7:ticket_created:+9190…`, ticket `HS-1008`); the second POST was deduplicated. The Brain told the caller "SMS bhi bhej diya
 hai" for `HD-1009`, so the caller may believe a text about `HD-1009` is coming while only the `HS-1008` text exists.
-**Recommendation for the team (decide, then record here):**
+**Agreed behaviour (review of PR #1, Member C, recorded here):**
+- **Ops deduplicates SMS through `idempotency_key`.** A repeated key returns HTTP 200 with the *stored* `SmsResult` of the first
+  message (a new request returns 202) and nothing is sent again. This is Member C's implementation and it is correct.
+- **A deduplicated SMS must not be represented to the caller as successfully sent.** "SMS bhi bhej diya hai" / "I have also sent you an
+  SMS" may be said only for an SMS that ops accepted as new (202) and did not suppress. A 200 duplicate, or a result whose status is
+  `suppressed` or `failed`, means no text left for *this* ticket, so the spoken line must not claim one (the ticket id is still spoken).
+- **Frozen contract v1.0.0 is not changed** (neither `sms_idempotency_key` nor the contract version) without approval from the team.
+  Option 1 below is the only route that changes it and stays a v1.1 proposal.
+
+**Status of that rule (honest limits):** the Brain still decides what to say *before* the runtime executes `send_sms` (the Brain does
+no I/O and never sees the ops result), so today the Brain's line can be spoken for a second SMS that ops will then deduplicate. Closing
+that gap needs either Option 2 (Brain-only, a session-level "already queued a `ticket_created` SMS to this number" check; not implemented,
+needs a go-ahead) or Member A's runtime acting on the ops response (suppress or replace the claim). Until one of them lands, CR-7 is open
+for calls that create two tickets for one number; the single-ticket path is unaffected. No code for this was changed in this review.
+
+**Recommendation for the team (options):**
 1. *Preferred, needs all three to approve (v1.1):* include `ticket_type` (or `turn_index`) in the SMS key. The Brain, A and C would each change one line, and fixture 06's key (`call-complaint:ticket_created:+91…`) would need regenerating, which is why the Brain does not do it alone.
 2. *No contract change, Brain-only (not implemented, needs a go-ahead):* the Brain remembers it already queued a `ticket_created` SMS to that number in this call and, for the second ticket, drops the `send_sms` action and the line "SMS bhi bhej diya hai" (the ticket id is still spoken).
 3. *Accept for the demo:* one ticket per call is the normal path; document it.

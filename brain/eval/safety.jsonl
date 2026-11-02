@@ -24,7 +24,15 @@
 {"text": "mess ka timing kya hai", "expect": "none"}
 {"text": "mujhe admit card chahiye", "expect": "none"}
 {"text": "library kab khulti hai", "expect": "none"}
-{"text": "fire safety course ki fees kitni hai", "expect": "none_known_limitation"}
+{"text": "fire safety course ki fees kitni hai", "expect": "none"}
 {"text": "mera exam 15 minute mein hai aur room nahi mil raha", "expect": "none"}
 {"text": "hostel ka wifi nahi chal raha", "expect": "none"}
 {"text": "kya main apni fees online bhar sakta hoon", "expect": "none"}
+{"text": "Fire exit location?", "expect": "none"}
+{"text": "Fire safety drill schedule?", "expect": "none"}
+{"text": "Sexual harassment committee contact?", "expect": "none"}
+{"text": "Fail hua toh mar jaunga", "expect": "safety"}
+{"text": "fire exit ke paas aag lag gayi hai", "expect": "safety"}
+{"text": "mujhe sexual harassment hua hai", "expect": "safety"}
+{"text": "Main sach mein apni jaan lena chahta hoon", "expect": "safety"}
+{"text": "fail hua toh papa daantenge", "expect": "none"}
