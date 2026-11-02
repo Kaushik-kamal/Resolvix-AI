@@ -16,7 +16,7 @@ Brain itself has never talked to the real Groq API.
 
 | Area | State |
 |---|---|
-| Brain library (pipeline, KB compiler, retrieval, safety, urgency, flows, validators, LLM client) | Complete; 415 tests pass |
+| Brain library (pipeline, KB compiler, retrieval, safety, urgency, flows, validators, LLM client) | Complete; 493 tests (483 offline + 10 real-model) |
 | Frozen contract v1.0.0 | Unchanged; 6 contract tests pass (need `PYTHONUTF8=1` on Windows) |
 | Nine fixture scenarios | Reproduced structurally (10 tests incl. the emergency-alert check) |
 | Clean-venv install | Verified today against the current code |
@@ -33,7 +33,7 @@ brain\.venv\Scripts\Activate.ps1
 $env:PYTHONUTF8 = "1"
 pytest contracts/tests -q                                   # 6 passed
 cd brain
-pytest -q                                                   # 415 passed
+pytest -q                                                   # 493 passed (483 offline + 10 real-model)
 pytest -q -m "not realembed"                                # 317 passed, 10 deselected (offline subset)
 pytest -q -m realembed                                      # 10 passed (loads multilingual-e5-small)
 pytest -m mocked_integration -q                             # 19 passed
@@ -71,9 +71,9 @@ set `$env:PYTHONUTF8 = "1"`.
 
 | Finding | Resolution |
 |---|---|
-| Test count differed between messages (296 / 304 / "300+") | explained above; the current exact count is 415 (405 offline + 10 real-model) |
+| Test count differed between messages (296 / 304 / "300+") | explained above; the count on 2026-11-02 is 493 = 483 offline (`-m "not realembed"`, measured after the last code change) + 10 real-model tests (`-m realembed`; 10 passed on this branch before the turn-rollback change and not re-run after it, which touches no embedding path); subsets such as `-m mocked_integration` are part of the 483, not additional |
 | **Expired KB entries kept being served after midnight** until someone published | **fixed**: expiry re-checked at answer time (FAQ hit and LLM citation), plus an automatic background recompile on the first turn of a new day (`brain.py::_maybe_refresh`, 4 tests). Small targeted change; no module rewritten |
-| SMS idempotency key (frozen helper) suppresses the second `ticket_created` SMS of a call | not fixable by B (frozen); pinned by a test and logged as CR-7 |
+| SMS idempotency key (frozen helper) suppresses the second `ticket_created` SMS of a call | handled Brain-side per call (`Session.sms_requested`, no contract change); see CR-7 and `tests/test_sms_dedup.py` |
 | Runtime cancellation can lose an action the Brain already delivered | not a Brain bug; documented as CR-8 and demonstrated in the reference runtime (shield + `aclose`) |
 | Devanagari queries rarely clear the FAQ threshold (1 of 6) although the right entry ranks first (6 of 6) | measured, not fixed: they fall through to the LLM. Needs real ASR transcripts to tune (section 6) |
 | `compile`/`chat` print a "GROQ_API_KEY is missing" error in live mode without a key | expected; use `--mock` for key-less runs |
@@ -117,7 +117,7 @@ latency with the real LLM; answer anything without a valid KB entry.
 3. After `POST /v1/kb/publish`, show `KBVersionInfo.warnings` (what was excluded and why) and, on failure, the problem list.
 4. Accept every ticket/SMS/gap/turn payload in `docs/samples/ops_received_after_emergency_and_human.json`; idempotent on the documented keys.
 5. Emit `alert.p1` for P1 tickets within 1 s; show `priority_reason`, `brief`, `collected_fields`, transfer events, SMS status.
-6. SMS policy must accept `staff_alert` (`vars: ticket_id, summary`; `consent: staff`) and `ticket_created` (`ticket_id, dept`; `transactional`). Expect the CR-7 duplicate suppression.
+6. SMS policy must accept `staff_alert` (`vars: ticket_id, summary`; `consent: staff`) and `ticket_created` (`ticket_id, dept`; `transactional`). The Brain requests each (recipient, template) SMS at most once per call (CR-7); ops should still dedupe on `idempotency_key`.
 7. Read `urgency_rules.yaml` as is (it now contains an `R-FALLBACK` rule with `action: ticket_and_callback`).
 
 ### Whole team
@@ -185,4 +185,4 @@ Done in this package only (nothing in Member C's or Member A's files; nothing co
 - `KB_EXPORT_SERVICE_KEY` added (CR-9): fixes the HTTP 401 on `/v1/kb/export`. 10 new tests against a real local HTTP server (valid, missing, invalid, 403, redirect, logging, settings repr, file sources, failed reload keeps the old KB).
 - Complaint flow investigated with a real ops-api: the earlier "incomplete" script was my script's turn order (the flow works as designed), but the trace exposed a real bug (a place-name correction was dropped); fixed with 2 tests.
 - Ticket events: the reference runtime now stamps `at` (frozen `TicketEvent` requires it, ops-api returns 422 without it); the mocked ops validates every event with the frozen model.
-- Test totals now: 415 Brain tests (405 offline + 10 real-model), 6 contract tests.
+- Test totals (2026-11-02): 493 Brain tests = 483 offline + 10 real-model (separate selections, no overlap), plus 6 contract tests. The offline and contract figures are from the final run; the real-model figure is from the earlier run noted above.

@@ -42,6 +42,7 @@ class Session:
     unclear_count: int = 0
     awaiting: str | None = None                                       # "anything_else"
     deferred: list[ActionEvent] = field(default_factory=list)        # critical actions lost to a barge-in
+    sms_requested: set[str] = field(default_factory=set)             # sms idempotency keys already requested in this call (CR-7)
     created: float = field(default_factory=time.monotonic)
     last_seen: float = field(default_factory=time.monotonic)
 

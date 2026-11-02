@@ -5,7 +5,7 @@ answers only from the approved knowledge base, never speaks a figure that is not
 deterministic rule table (the LLM only extracts facts), and creates a ticket before any transfer. It does no I/O except the
 LLM and the local embedding model: no HTTP server, database, Agora, SMS or UI (those belong to Members A and C).
 
-Status: implemented and tested against the frozen contract v1.0.0 (415 tests: 405 offline + 10 that load the real embedding model).
+Status: implemented and tested against the frozen contract v1.0.0 (493 tests: 483 offline + 10 that load the real embedding model, counted separately).
 Start with `docs/MEMBER_B_HANDOFF.md`; integration guides for Members A and C are in `docs/INTEGRATION_EXAMPLES.md`, the test plan in
 `docs/INTEGRATION_TEST_PLAN.md`. Nothing outside the Brain (runtime, ops-api, dashboard, Agora, live Groq) has been exercised. **Not yet exercised against the live Groq API** (no key was
 available): see "Known limitations".
@@ -19,7 +19,7 @@ pip install -e contracts/python -e "brain[dev]"
 $env:PYTHONUTF8 = "1"                       # the frozen contract test reads UTF-8 files without saying so (see docs/CONTRACT_CHANGE_REQUEST.md CR-1)
 pytest contracts/tests -q                   # must be green first (6 tests)
 cd brain
-pytest -q                                   # 415 tests; the first run downloads the e5 model (~470 MB, one time)
+pytest -q                                   # 493 tests (483 offline + 10 real-model); the first run downloads the e5 model (~470 MB, one time)
 pytest -q -m "not realembed"                # offline-only subset (no model download)
 python -m resolvix_brain eval --mock        # scorecard (exit code 2 = deterministic targets met, LLM ones not verified)
 python -m resolvix_brain chat --mock        # interactive REPL, prints each event as JSON plus the spoken text

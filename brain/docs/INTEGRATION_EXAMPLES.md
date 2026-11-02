@@ -4,7 +4,7 @@ Everything here is based on the frozen contracts v1.0.0. **What is tested and wh
 
 | Item | Status |
 |---|---|
-| Brain behaviour, event streams, ticket-first, placeholders, deferral, KB reload from a file and from a real local HTTP server | Tested (`tests/`, 415 tests) |
+| Brain behaviour, event streams, ticket-first, placeholders, deferral, KB reload from a file and from a real local HTTP server | Tested (`tests/`, 493 tests: 483 offline + 10 real-model) |
 | `examples/runtime_sim.py` (a reference runtime + in-memory ops service written by Member B as an *illustration*) | Tested by 19 mocked-integration tests. It is **not** Member A's or C's code |
 | The FastAPI glue snippets in A10 | **Untested**: FastAPI is not installed in the Brain environment and Member A's runtime does not exist here |
 | Anything involving Agora, a real phone, the real ops-api or the dashboard | **Not run.** Nothing in this repository exercises them |
@@ -401,8 +401,11 @@ Real samples: `docs/samples/events_*.json` (what A receives) and `docs/samples/o
 - On a P1 ticket creation emit `alert.p1` on `/v1/stream` within 1 s so the dashboard can sound/flash; the Brain cannot do this for you.
 - `ticket_created` SMS: `vars = {ticket_id, dept}` where `dept` is the department **name** ("Hostel Office"), `consent="transactional"`,
   sent only to the caller's own or confirmed number.
-- **Known limitation (CR-7):** the frozen key `{call_id}:ticket_created:{to_number}` means a *second* ticket in the same call to the same
-  number gets its SMS deduplicated away. Expect this; it is not a bug in the Brain.
+- **CR-7 (handled in the Brain, no contract change):** the frozen key `{call_id}:ticket_created:{to_number}` has no ticket component, so ops
+  would drop a *second* ticket's SMS in the same call. The Brain remembers the SMS keys it requested in each call and does not emit a second
+  `send_sms` for the same recipient and template; it then says nothing about an SMS (the ticket id is still spoken). You will therefore
+  normally not see a duplicate POST, but keep ops' own deduplication. The Brain's spoken line says an SMS was *requested*, not sent, because it
+  never learns the ops result.
 - `answer_copy` and `status_change` templates are not emitted by the Brain (status SMS is yours, triggered by staff changes).
 
 ## B9. What the dashboard should be able to show

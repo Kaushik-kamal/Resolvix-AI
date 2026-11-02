@@ -44,10 +44,10 @@ human_callback:
   hi: "Bilkul. Maine ticket {{ticket_id}} bana diya hai. <dept> abhi band hai, office khulte hi staff aapko call karega."
   en: "Certainly. I have raised ticket {{ticket_id}}. <dept> is closed right now, so staff will call you when it opens."
   deva: "बिल्कुल। मैंने टिकट {{ticket_id}} बना दिया है। <dept> अभी बंद है, खुलते ही स्टाफ आपको कॉल करेगा।"
-sms_sent:
-  hi: "SMS bhi bhej diya hai."
-  en: "I have also sent you an SMS."
-  deva: "SMS भी भेज दिया है।"
+sms_requested:
+  hi: "SMS bhejne ki request bhi kar di hai."
+  en: "I have also requested an SMS to be sent to you."
+  deva: "SMS भेजने की रिक्वेस्ट भी कर दी है।"
 
 unknown_offer:
   hi: "Is baare mein mere paas pakki jaankari nahi hai. Kya main ticket bana doon taaki <dept> aapko call kare? Isi number par call karein?"

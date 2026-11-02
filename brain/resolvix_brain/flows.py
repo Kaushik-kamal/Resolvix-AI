@@ -26,7 +26,8 @@ from .rules import RuleResult, RuleTable
 from .safety import Lexicon, SafetyHit
 from .session import Flow, Session
 from .speech import to_spoken
-from .text import (extract_phone, extract_roll_number, last4_spoken, redact, reply_lang, tokens, word_count, yes_no)
+from .text import (extract_phone, extract_roll_number, last4_spoken, looks_like_identity, redact, reply_lang, tokens,
+                   word_count, yes_no)
 from .urgency import extract_location, extract_paper, infer_category
 
 MAX_FOLLOWUPS = 2
@@ -110,11 +111,25 @@ def build_ticket(sess: Session, ctx: Ctx, *, ttype: str, priority: str, reason: 
         transcript_excerpt=excerpt(sess, text), brief=brief[:500])
 
 
-def sms_action(sess: Session, ctx: Ctx, template: str, to: str | None, vars: dict[str, str], consent: str):
+def sms_action(sess: Session, ctx: Ctx, template: str, to: str | None, vars: dict[str, str], consent: str,
+               plan: Plan | None = None):
+    """The ``send_sms`` action, or None when there is no valid number or this call already requested the same SMS.
+
+    CR-7: ops dedupes on the frozen key ``{call_id}:{template}:{to}``, which has no ticket component, so a second
+    request for the same recipient and template in one call would be dropped there and the caller told a text is
+    coming. The Brain therefore remembers the keys it requested in this call (``Session.sms_requested``, committed with
+    the turn, gone when the call ends) and does not request the same one again. Callers must say nothing about an SMS
+    when this returns None. The Brain never learns whether ops delivered anything, so the spoken line only says an SMS
+    was *requested*."""
     if not valid_e164(to):
         return None
-    return SendSmsAction(idempotency_key=sms_idempotency_key(ctx.call_id, template, to), to_number=to,
-                         template_id=template, vars=vars, consent=consent)
+    key = sms_idempotency_key(sess.call_id, template, to)
+    if key in sess.sms_requested:
+        if plan is not None and "sms_duplicate_suppressed" not in plan.flags:
+            plan.flags.append("sms_duplicate_suppressed")
+        return None
+    sess.sms_requested.add(key)
+    return SendSmsAction(idempotency_key=key, to_number=to, template_id=template, vars=vars, consent=consent)
 
 
 def _transfer(ctx: Ctx, dept: str, reason: str, brief: str) -> TransferAction:
@@ -156,7 +171,7 @@ def emergency_plan(sess: Session, ctx: Ctx, text: str, hit: SafetyHit | None, ru
         brief=brief, text=text)), blocking=True)
     for n in ctx.directory.emergency_alert_numbers():
         a = sms_action(sess, ctx, "staff_alert", n, {"ticket_id": TICKET_ID_PLACEHOLDER,
-                                                      "summary": f"{label} emergency reported on a live call"}, "staff")
+                                                      "summary": f"{label} emergency reported on a live call"}, "staff", plan)
         if a:
             plan.act(a)
     plan.act(_transfer(ctx, "emergency", f"Safety/medical statement ({category})", brief), blocking=True)
@@ -186,11 +201,11 @@ def human_plan(sess: Session, ctx: Ctx, text: str, rule: RuleResult, *, facts: U
         plan.act(_transfer(ctx, dept, "Caller requested a human", brief), blocking=True)
     else:
         sms = sms_action(sess, ctx, "ticket_created", sess.caller_number,
-                         {"ticket_id": TICKET_ID_PLACEHOLDER, "dept": dname}, "transactional")
+                         {"ticket_id": TICKET_ID_PLACEHOLDER, "dept": dname}, "transactional", plan)
         if sms:
             plan.act(sms)
         said = L(sess, "callback_done" if force_callback else "human_callback", dept=dname)
-        plan.say(said + (" " + L(sess, "sms_sent") if sms else ""))
+        plan.say(said + (" " + L(sess, "sms_requested") if sms else ""))
     return plan
 
 
@@ -263,10 +278,10 @@ def _urgent_finish(sess: Session, ctx: Ctx, text: str, flow: Flow) -> Plan:
                            brief), blocking=True)
     else:
         sms = sms_action(sess, ctx, "ticket_created", sess.caller_number,
-                         {"ticket_id": TICKET_ID_PLACEHOLDER, "dept": dname}, "transactional")
+                         {"ticket_id": TICKET_ID_PLACEHOLDER, "dept": dname}, "transactional", plan)
         if sms:
             plan.act(sms)
-        plan.say(L(sess, "urgent_callback", dept=dname) + (" " + L(sess, "sms_sent") if sms else ""))
+        plan.say(L(sess, "urgent_callback", dept=dname) + (" " + L(sess, "sms_requested") if sms else ""))
     return plan
 
 
@@ -348,10 +363,10 @@ def _complaint_create(sess: Session, ctx: Ctx, text: str, flow: Flow) -> Plan:
         callback_number=cb, callback_requested=False,
         brief=_complaint_ticket_summary(sess, d)[:200], text=d.get("details", ""))), blocking=True)
     sms = sms_action(sess, ctx, "ticket_created", cb or None,
-                     {"ticket_id": TICKET_ID_PLACEHOLDER, "dept": dname}, "transactional")
+                     {"ticket_id": TICKET_ID_PLACEHOLDER, "dept": dname}, "transactional", plan)
     if sms:
         plan.act(sms)
-    plan.say(L(sess, "complaint_done") + (" " + L(sess, "sms_sent") if sms else ""))
+    plan.say(L(sess, "complaint_done") + (" " + L(sess, "sms_requested") if sms else ""))
     plan.awaiting = "anything_else"
     return plan
 
@@ -364,7 +379,7 @@ def _complaint_reply(sess: Session, ctx: Ctx, text: str, flow: Flow) -> Plan | N
         loc = extract_location(text)
         if loc and not d.get("location"):
             d["location"] = loc
-        elif not d.get("location") and word_count(text) <= 8 and yn is None:
+        elif not d.get("location") and word_count(text) <= 8 and yn is None and not looks_like_identity(text):
             d["location"] = redact(text).strip(" .,")[:60]
         cat = infer_category(text)
         if cat and not d.get("category"):
@@ -405,7 +420,7 @@ def _complaint_reply(sess: Session, ctx: Ctx, text: str, flow: Flow) -> Plan | N
         as_place = False
         if loc:
             d["location"] = loc
-        elif not phone and not cat and word_count(text) <= 8:   # a plain place name ("Central library second floor")
+        elif not phone and not cat and word_count(text) <= 8 and not looks_like_identity(text):   # a plain place name ("Central library second floor")
             d["location"] = redact(text).strip(" .,")[:60]
             as_place = True
         if phone:
@@ -453,7 +468,7 @@ def _unknown_create(sess: Session, ctx: Ctx, text: str, flow: Flow, callback: st
         brief=f"Question not in KB: {d['question'][:200]}. Call back" + (" on the caller number." if callback == sess.caller_number else "."),
         text=d["question"])), blocking=True)
     plan.act(LogGapAction(question=d["question"], lang=lang, department_guess=dept))
-    sms = sms_action(sess, ctx, "ticket_created", callback, {"ticket_id": TICKET_ID_PLACEHOLDER, "dept": dname}, "transactional")
+    sms = sms_action(sess, ctx, "ticket_created", callback, {"ticket_id": TICKET_ID_PLACEHOLDER, "dept": dname}, "transactional", plan)
     if sms:
         plan.act(sms)
     same = callback and callback == sess.caller_number

@@ -60,15 +60,33 @@ hai" for `HD-1009`, so the caller may believe a text about `HD-1009` is coming w
 - **Frozen contract v1.0.0 is not changed** (neither `sms_idempotency_key` nor the contract version) without approval from the team.
   Option 1 below is the only route that changes it and stays a v1.1 proposal.
 
-**Status of that rule (honest limits):** the Brain still decides what to say *before* the runtime executes `send_sms` (the Brain does
-no I/O and never sees the ops result), so today the Brain's line can be spoken for a second SMS that ops will then deduplicate. Closing
-that gap needs either Option 2 (Brain-only, a session-level "already queued a `ticket_created` SMS to this number" check; not implemented,
-needs a go-ahead) or Member A's runtime acting on the ops response (suppress or replace the claim). Until one of them lands, CR-7 is open
-for calls that create two tickets for one number; the single-ticket path is unaffected. No code for this was changed in this review.
+**Implemented (Option 2, approved by Member C; Brain-only, no contract change):**
+- **Key:** the frozen `sms_idempotency_key(call_id, template_id, to_number)` itself, i.e. exactly what ops dedupes on. The Brain stores the keys it
+  has requested in `Session.sms_requested` (a set, deep-copied with the session clone and committed with the turn, so a turn that is discarded
+  before its first event leaves no trace).
+- **Scope and lifecycle:** one call. The set lives in the in-memory session; `end_call` (or the 2 h TTL) drops it, so a new call, even to the same
+  number or with a reused call id after `end_call`, may request the SMS again. Nothing is shared across calls.
+- **Effect:** the second request for the same recipient *and* template in a call yields no `send_sms` action, the turn's `validator_flags`
+  contain `sms_duplicate_suppressed`, and the spoken text says nothing about an SMS (the ticket id is still spoken). A different recipient or a
+  different template (for example `staff_alert` vs `ticket_created`) is still emitted.
+- **Failed planning:** if planning raises, the turn is rolled back transactionally: the fallback is spoken from the half-planned copy but the
+  session that is committed is a fresh copy of the pre-turn session (`ResolvixBrain.handle_turn`), so a key recorded by `sms_action` before the
+  failure is not kept and a later legitimate request is not suppressed. Tests: `tests/test_turn_rollback.py`.
+- **Retries and barge-in:** a retried turn cannot bypass it (the key is already in the committed session). An SMS the runtime never received
+  (barge-in after the ticket) is *deferred*, not suppressed: it is re-emitted on the next turn and counts as requested from then on.
+- **Truthful wording:** the Brain never receives the ops result (no field for it in the frozen contract), so it can only say an SMS was
+  *requested* ("SMS bhejne ki request bhi kar di hai" / "I have also requested an SMS to be sent to you"), never that it was sent. Suppressing a
+  duplicate never produces any "sent" wording.
+- **Limitations:** (1) state is in memory: if the runtime restarts mid-call, the ad-hoc session has no memory, and ops' own dedup is the only
+  guard there. (2) The second ticket's SMS is not sent at all (before: posted to ops and dropped); the caller still hears the ticket id. A second
+  *emergency* in the same call does not alert staff by SMS again for the same reason (ops would have dropped it anyway under the frozen key);
+  the ticket and transfer are unaffected. (3) If v1.1 adds a ticket component to the key, remove this check. (4) Whether an SMS that *was*
+  requested is delivered is only known to ops and Member A's runtime; a runtime that wants to say "sent" must wait for ops' confirmation.
+Tests: `tests/test_sms_dedup.py` (12) and `test_second_ticket_in_one_call_requests_no_second_sms_and_never_posts_a_duplicate`.
 
 **Recommendation for the team (options):**
 1. *Preferred, needs all three to approve (v1.1):* include `ticket_type` (or `turn_index`) in the SMS key. The Brain, A and C would each change one line, and fixture 06's key (`call-complaint:ticket_created:+91…`) would need regenerating, which is why the Brain does not do it alone.
-2. *No contract change, Brain-only (not implemented, needs a go-ahead):* the Brain remembers it already queued a `ticket_created` SMS to that number in this call and, for the second ticket, drops the `send_sms` action and the line "SMS bhi bhej diya hai" (the ticket id is still spoken).
+2. *No contract change, Brain-only (IMPLEMENTED, see above):* the Brain remembers it already queued a `ticket_created` SMS to that number in this call and, for the second ticket, drops the `send_sms` action and the line "SMS bhi bhej diya hai" (the ticket id is still spoken).
 3. *Accept for the demo:* one ticket per call is the normal path; document it.
 
 ## CR-8 (integration hazard, not a contract change): once the Brain yields an action, the runtime owns it
