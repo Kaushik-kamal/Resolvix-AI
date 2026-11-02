@@ -28,6 +28,7 @@ class _Server:
     def __init__(self, mode: str = "key", redirect_to: str | None = None):
         outer = self
         self.seen: list[str | None] = []
+        self.header_names: list[list[str]] = []
 
         class H(BaseHTTPRequestHandler):
             def log_message(self, *a):  # silence
@@ -36,6 +37,7 @@ class _Server:
             def do_GET(self):
                 key = self.headers.get("X-Service-Key")
                 outer.seen.append(key)
+                outer.header_names.append(list(self.headers.keys()))
                 if redirect_to:
                     self.send_response(302)
                     self.send_header("Location", redirect_to)
@@ -170,3 +172,15 @@ async def test_reload_through_the_brain_with_key_missing_key_and_bad_key(server,
         assert b.store.active.kb.kb_version == before         # a failed reload keeps the old KB active
 
     assert GOOD_KEY not in caplog.text and "nope-nope-nope" not in caplog.text
+
+
+async def test_env_value_is_sent_verbatim_under_exactly_the_x_service_key_header(server):
+    s = server()
+    settings = BrainSettings.from_env({"KB_EXPORT_SERVICE_KEY": GOOD_KEY, "LLM_MODE": "mock", "EMBED_MODE": "lexical"})
+    b = ResolvixBrain(settings, embedder=LexicalEmbedder())
+    await b.ready()
+    await b.reload_kb(src(s.url))
+    assert s.seen == [GOOD_KEY]
+    sent = s.header_names[-1]
+    assert "X-Service-Key" in sent                            # exact name, exact case on the wire
+    assert not [h for h in sent if h.lower() in ("authorization", "x-api-key", "x-kb-key", "cookie")]

@@ -4,7 +4,7 @@ Everything here is based on the frozen contracts v1.0.0. **What is tested and wh
 
 | Item | Status |
 |---|---|
-| Brain behaviour, event streams, ticket-first, placeholders, deferral, KB reload from a file and from a real local HTTP server | Tested (`tests/`, 339 tests) |
+| Brain behaviour, event streams, ticket-first, placeholders, deferral, KB reload from a file and from a real local HTTP server | Tested (`tests/`, 415 tests) |
 | `examples/runtime_sim.py` (a reference runtime + in-memory ops service written by Member B as an *illustration*) | Tested by 19 mocked-integration tests. It is **not** Member A's or C's code |
 | The FastAPI glue snippets in A10 | **Untested**: FastAPI is not installed in the Brain environment and Member A's runtime does not exist here |
 | Anything involving Agora, a real phone, the real ops-api or the dashboard | **Not run.** Nothing in this repository exercises them |

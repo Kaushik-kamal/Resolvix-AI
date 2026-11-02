@@ -38,6 +38,13 @@ rules:
     department: from_topic_or_default
     action: transfer_if_open_else_callback
     reason: "Caller asked for a person"
+  - id: R-FALLBACK
+    when: {intent: system_failure}   # raised by the brain itself on LLM/internal failure; never matched from caller text. Must stay above R-UNANSWERED (first match wins; a fallback turn has tier escalate)
+    priority: P3
+    ticket_type: SYSTEM_FAILURE
+    department: from_topic_or_default
+    action: ticket_and_callback
+    reason: "Agent could not answer because of a system failure"
   - id: R-UNANSWERED
     when: {tier: escalate}
     priority: P3
@@ -45,13 +52,6 @@ rules:
     department: from_topic_or_default
     action: ticket_and_gap
     reason: "Question not covered by approved documents"
-  - id: R-FALLBACK
-    when: {intent: system_failure}   # raised by the brain itself when the LLM/internal pipeline fails; never matched from caller text
-    priority: P3
-    ticket_type: SYSTEM_FAILURE
-    department: from_topic_or_default
-    action: ticket_and_callback
-    reason: "Agent could not answer because of a system failure"
   - id: R-ROUTINE
     when: {}
     priority: P4
@@ -72,7 +72,8 @@ safety_lexicon:
                molest, molested, "chhed chhad", "छेड़छाड़", "dhamki", "धमकी", threat, threatening, stalking, stalker,
                "blackmail", "ब्लैकमेल", "sexual", "yaun shoshan", "यौन उत्पीड़न"]
   self_harm: [suicide, "सुसाइड", "आत्महत्या", "khud ko maar", "khud ko khatam", "jaan de", "jaan dene", "mar jaunga",
-              "mar jaungi", "मर जाऊंगा", "मर जाऊँगी", "marna chahta", "marna chahti", "end my life", "kill myself",
+              "mar jaungi", "मर जाऊंगा", "मर जाऊँगी",
+              "jaan lena", "jaan lene", "jaan le lunga", "jaan le loonga", "jaan le lungi", "apni jaan", "जान लेना", "जान लेने", "जान ले लूंगा", "marna chahta", "marna chahti", "end my life", "kill myself",
               "khudkushi", "ख़ुदकुशी", "खुदकुशी", "zindagi khatam"]
   violence: [fight, "maar peet", "marpeet", "मारपीट", weapon, knife, "chaku", "चाकू", gun, "pistol", "bandook", "बंदूक",
              "attack", "hamla", "हमला", fire, "aag lag", "आग लग", "aag lagi", "blast", "dhamaka", "bomb", "बम"]
@@ -81,4 +82,27 @@ human_request_lexicon: ["insaan se baat", "kisi se baat", "kisi insaan", human, 
                         "speak to a person", "agent se baat", "adhikari se baat", "इंसान से बात", "किसी से बात",
                         "स्टाफ से बात", "ऑपरेटर"]
 # Phrases that contain a lexicon word but are not a request for a person (checked before human_request_lexicon).
-human_request_exclusions: ["human resource", "human resources", "humanities", "human rights"]
+# An exclusion only cancels the lexicon word inside the phrase: "I need a human, not human resources" still matches.
+human_request_exclusions: ["human resource", "human resources", "humanities", "human rights", "human anatomy",
+                           "human body", "human physiology", "human biology", "human psychology", "human genome",
+                           "human development", "human values", "human factors", "human computer interaction",
+                           "human resource management"]
+# Ordinary phrases that contain an ambiguous safety_lexicon word (fire, fight, attack, threat, sexual, faint, ragging,
+# mar jaunga). An exclusion only cancels the lexicon word inside the phrase, so a clear emergency expression anywhere
+# else in the same sentence still fires ("fire exit ke paas aag lag gayi hai" -> "aag lag"). Keep phrases specific:
+# a bare "mar jaunga", "fire" or "attack" is never excluded, and nothing exam-related is excluded from self-harm: "fail hua toh
+# mar jaunga" stays P1 (a false alarm costs a staff call; a missed disclosure can cost a life). Only idioms that cannot be about
+# harming oneself (hunger, heat, laughter) are listed for "mar jaunga".
+safety_exclusions: ["fire exit", "fire exits", "fire safety", "fire drill", "fire extinguisher", "fire extinguishers",
+                    "fire escape", "fire warden", "fire audit", "fire noc", "fire equipment",
+                    "fight club", "fight for", "fight against",
+                    "attack on titan", "cyber attack", "virus attack",
+                    "threat model", "threat modeling", "threat modelling", "threat detection", "threat analysis",
+                    "threat intelligence",
+                    "sexual harassment committee", "sexual harassment cell", "sexual harassment policy",
+                    "sexual harassment awareness", "sexual harassment prevention", "sexual harassment complaints committee",
+                    "anti ragging committee", "anti ragging cell", "anti ragging squad", "anti ragging policy",
+                    "anti ragging affidavit", "anti ragging undertaking", "anti ragging helpline",
+                    "faint signal", "faint idea", "faint network", "faint memory",
+                    "bhookh se mar jaunga", "bhookh se mar jaungi", "garmi se mar jaunga", "garmi se mar jaungi",
+                    "hans hans ke mar jaunga", "hans hans ke mar jaungi"]

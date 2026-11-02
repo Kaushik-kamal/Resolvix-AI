@@ -169,3 +169,156 @@ async def test_llm_extracted_safety_flag_also_takes_the_emergency_plan(brain):
     ev_ = await c.say("mere bhai ki halat bahut kharab hai kuch bol nahi pa raha")
     assert done(ev_).rule_id == "R-SAFETY" and done(ev_).path == "safety"
     assert [a.kind for a in actions(ev_)] == ["create_ticket", "send_sms", "send_sms", "transfer"]
+
+
+# ------------------------------------------------------------------ R-FALLBACK ordering (first match wins)
+def test_fallback_rule_sits_above_unanswered():
+    ids = [r["id"] for r in table.rules]
+    assert ids.index("R-FALLBACK") < ids.index("R-UNANSWERED")
+    assert ids.index("R-SAFETY") < ids.index("R-FALLBACK")           # safety still beats everything
+
+
+def test_fallback_with_escalate_tier_is_not_a_knowledge_gap():
+    r = ev(intent="system_failure", tier="escalate")
+    assert (r.rule_id, r.ticket_type, r.action) == ("R-FALLBACK", "SYSTEM_FAILURE", "ticket_and_callback")
+
+
+@pytest.mark.parametrize("tier", ["confident", "partial", "clarify", "chitchat"])
+def test_fallback_with_non_escalate_tier(tier):
+    assert ev(intent="system_failure", tier=tier).rule_id == "R-FALLBACK"
+
+
+@pytest.mark.parametrize("intent", ["faq", "other", "complaint"])
+def test_genuine_unanswered_question_is_still_a_knowledge_gap(intent):
+    r = ev(intent=intent, tier="escalate")
+    assert (r.rule_id, r.ticket_type, r.action) == ("R-UNANSWERED", "KNOWLEDGE_GAP", "ticket_and_gap")
+
+
+def test_fallback_does_not_outrank_emergency_or_human_request():
+    assert ev(intent="system_failure", tier="escalate", safety_flag=True).rule_id == "R-SAFETY"
+    assert ev(event_type="exam", minutes_to_event=10, blocked=True, intent="system_failure",
+              tier="escalate").rule_id == "R-EXAM-60"
+    assert ev(intent="human_request", tier="escalate").rule_id == "R-HUMAN"
+
+
+# ------------------------------------------------------------------ ambiguous safety words (safety_exclusions)
+@pytest.mark.parametrize("text", [
+    "Fire exit location?", "Fire safety drill schedule?", "Sexual harassment committee contact?",
+    "where is the fire extinguisher in the lab", "fire drill kab hai", "anti ragging affidavit chahiye",
+    "anti ragging committee ka number do", "sexual harassment policy ka pdf chahiye", "attack on titan club kab milta hai",
+    "cyber attack ke baare mein seminar hai kya", "threat modeling course ki fees", "fight club ka timing kya hai",
+    "faint signal aa raha hai wifi pe", "garmi se mar jaunga hostel mein fan nahi chal raha"])
+def test_ordinary_questions_with_ambiguous_words_do_not_hit(text):
+    assert lex.safety_hit(text) is None, text
+
+
+@pytest.mark.parametrize("text,category", [
+    ("There is a fire in the lab", "violence"), ("fire lag gayi hai hostel mein", "violence"),
+    ("fire exit ke paas aag lag gayi hai", "violence"),                    # exclusion covers 'fire exit' only
+    ("fire safety drill ke time ek ladka behosh ho gaya", "medical"),
+    ("fire exit pe fire lag gayi", "violence"),                           # second, unexcluded 'fire'
+    ("two boys have a fight in the canteen", "violence"), ("someone is going to attack me", "violence"),
+    ("he is threatening me", "harassment"), ("mujhe dhamki mil rahi hai", "harassment"),
+    ("mujhe sexual harassment hua hai", "harassment"),
+    ("sexual harassment committee ko batana hai, ek senior mujhe harass kar raha hai", "harassment"),
+    ("anti ragging committee ko batao, mujhe ragging kar rahe hain", "harassment"),
+    ("she may faint, please send help", "medical"), ("ek ladki faint ho gayi", "medical"),
+    ("mar jaunga", "self_harm"), ("main mar jaunga", "self_harm"), ("ab main mar jaungi", "self_harm"),
+    ("fail hua toh mar jaunga, main suicide kar lunga", "self_harm"),
+    ("Fail hua toh mar jaunga, main suicide kar lunga.", "self_harm"),
+    ("Main sach mein apni jaan lena chahta hoon", "self_harm"), ("main sach mein apni jaan le lunga", "self_harm"),
+    ("मैं सच में अपनी जान लेना चाहता हूं", "self_harm"),
+    ("Fail hua toh mar jaunga", "self_harm"), ("fail ho gaya toh mar jaungi", "self_harm"),   # exam context never excludes it
+    ("फेल हुआ तो मर जाऊंगा", "self_harm"),
+    ("fail hua toh mar jaunga aur khud ko maar dunga", "self_harm"),
+    ("kill myself", "self_harm"), ("मैं मर जाऊंगा", "self_harm")])
+def test_clear_emergencies_still_hit_even_next_to_an_excluded_phrase(text, category):
+    h = lex.safety_hit(text)
+    assert h is not None and h.category == category, (text, h)
+
+
+def test_exclusions_never_hide_an_emergency_term_appended_to_them():
+    excl = yaml.safe_load(RULES.read_text(encoding="utf-8"))["safety_exclusions"]
+    assert excl and all(isinstance(e, str) and e.strip() for e in excl)
+    for e in excl:
+        assert lex.safety_hit(e) is None, e                                     # the phrase alone is ordinary
+        assert lex.safety_hit(f"{e} aur ek ladka behosh ho gaya hai") is not None, e
+        assert lex.safety_hit(f"{e}, i will kill myself") is not None, e
+
+
+def test_safety_exclusions_are_specific_phrases():
+    excl = [e.lower() for e in yaml.safe_load(RULES.read_text(encoding="utf-8"))["safety_exclusions"]]
+    for bare in ("fire", "fight", "attack", "threat", "sexual", "faint", "mar jaunga", "mar jaungi"):
+        assert bare not in excl, bare
+    assert all(len(e.split()) >= 2 for e in excl)
+
+
+async def test_fire_exit_question_does_not_take_the_emergency_path(brain):
+    c = Caller(brain, "c-fire-exit", "+919000000003")
+    ev_ = await c.say("Fire exit location?")
+    assert done(ev_).path != "safety" and done(ev_).rule_id != "R-SAFETY"
+    assert not actions(ev_, "create_ticket") or actions(ev_, "create_ticket")[0].ticket.type != "EMERGENCY"
+
+
+async def test_real_fire_still_takes_the_emergency_path(brain):
+    c = Caller(brain, "c-real-fire", "+919000000003")
+    ev_ = await c.say("fire exit ke paas aag lag gayi hai")
+    assert done(ev_).path == "safety" and done(ev_).rule_id == "R-SAFETY"
+
+
+# ------------------------------------------------------------------ human-request exclusions
+@pytest.mark.parametrize("text", [
+    "I need a human", "Connect me to a real person", "Mujhe kisi insaan se baat karni hai", "talk to a human please",
+    "human se baat karao", "can I speak to someone", "operator please", "press 0", "agent se baat karni hai",
+    "I need a human, not human resources", "human anatomy nahi, mujhe kisi insaan se baat karni hai"])
+def test_human_assistance_triggers(text):
+    assert lex.human_request(text) is True, text
+
+
+@pytest.mark.parametrize("text", [
+    "Human anatomy", "Human body", "Human physiology", "human anatomy syllabus kya hai", "human body ka lab kab hai",
+    "human physiology practical timing", "human resources department", "human rights club", "humanities block kahan hai",
+    "human computer interaction elective", "human values course"])
+def test_human_topics_do_not_trigger_human_assistance(text):
+    assert lex.human_request(text) is False, text
+
+
+def test_dtmf_zero_always_requests_a_human():
+    assert lex.human_request("human anatomy", "0") is True
+
+
+# ------------------------------------------------------------------ exam anxiety vs explicit self-harm intent
+@pytest.mark.parametrize("text", [
+    "exam mein fail ho gaya, bahut tension hai", "fail hua toh papa daantenge", "fail hone ka bahut dar lag raha hai",
+    "mujhe exam ka bahut stress hai, backlog clear kaise hoga", "result kharab aaya, ab kya karun", "fail ho gaya toh kya re-exam hota hai",
+    "exam anxiety ke liye counsellor ka number do", "paper bura gaya, mummy gussa hongi"])
+def test_ordinary_exam_anxiety_is_not_an_emergency(text):
+    assert lex.safety_hit(text) is None, text
+
+
+@pytest.mark.parametrize("text", [
+    "Fail hua toh mar jaunga, main suicide kar lunga.", "Main sach mein apni jaan lena chahta hoon",
+    "fail ho gaya, ab main khud ko khatam kar dunga", "exam ke baad main kill myself karunga",
+    "exam mein fail hua, jeena nahi chahta, marna chahta hoon", "फेल हो गया, अब आत्महत्या कर लूंगा",
+    "Fail hua toh mar jaunga"])
+def test_exam_context_never_cancels_explicit_self_harm(text):
+    h = lex.safety_hit(text)
+    assert h is not None and h.category == "self_harm" and h.event_type == "safety", (text, h)
+
+
+def test_no_exclusion_mentions_exams_or_self_harm_phrases():
+    excl = [e.lower() for e in yaml.safe_load(RULES.read_text(encoding="utf-8"))["safety_exclusions"]]
+    assert not [e for e in excl if "fail" in e.split() or "exam" in e.split() or "फेल" in e.split()]
+    sh = [t for t in yaml.safe_load(RULES.read_text(encoding="utf-8"))["safety_lexicon"]["self_harm"] if " " in t or t.isascii()]
+    # only hunger/heat/laughter idioms may cover a self-harm term
+    for e in excl:
+        if lex.safety_hit(e + " ") is None and any(t.lower() in e for t in sh):
+            assert e.split()[:2] in (["bhookh", "se"], ["garmi", "se"], ["hans", "hans"]), e
+
+
+async def test_fail_hua_toh_mar_jaunga_takes_the_emergency_path(brain):
+    c = Caller(brain, "c-exam-sh", "+919000000003")
+    calls = len(brain.llm_client.calls)
+    ev_ = await c.say("Fail hua toh mar jaunga, main suicide kar lunga.")
+    assert done(ev_).path == "safety" and done(ev_).rule_id == "R-SAFETY" and len(brain.llm_client.calls) == calls
+    assert actions(ev_, "create_ticket")[0].ticket.priority == "P1"
