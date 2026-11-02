@@ -30,6 +30,7 @@ from .text import normalize
 from .validate import source_facts
 
 EVAL_DIR = BRAIN_DIR / "eval"
+_EVAL_OVERRIDE: Path | None = None   # a directory whose files take precedence over EVAL_DIR (see ``run_eval(set_dir=...)``)
 IST = timezone(timedelta(hours=5, minutes=30))
 NOW = datetime(2026, 10, 23, 10, 15, tzinfo=IST)          # a Friday morning, MVP offices open
 TARGETS = {"answerable": 0.85, "abstain": 0.90, "urgency": 1.0, "safety": 1.0, "human": 1.0, "figures": 0.0,
@@ -38,6 +39,8 @@ TARGETS = {"answerable": 0.85, "abstain": 0.90, "urgency": 1.0, "safety": 1.0, "
 
 def load_jsonl(name: str) -> list[dict]:
     p = EVAL_DIR / f"{name}.jsonl"
+    if _EVAL_OVERRIDE is not None and (_EVAL_OVERRIDE / f"{name}.jsonl").exists():
+        p = _EVAL_OVERRIDE / f"{name}.jsonl"
     return [json.loads(l) for l in p.read_text(encoding="utf-8").splitlines() if l.strip()]
 
 
@@ -310,7 +313,10 @@ class Scorecard:
                 "sets": [{**dataclasses.asdict(s), "rate": s.rate, "met": s.met} for s in self.sets], "exit_code": self.exit_code()}
 
 
-async def run_eval(settings: BrainSettings, which: str = "all") -> Scorecard:
+async def run_eval(settings: BrainSettings, which: str = "all", set_dir: Path | None = None) -> Scorecard:
+    """``set_dir``: a directory of eval files that replace the default ones of the same name (for a different KB)."""
+    global _EVAL_OVERRIDE
+    _EVAL_OVERRIDE = Path(set_dir) if set_dir else None
     brain = ResolvixBrain(settings)
     await brain.ready()
     live = settings.llm_mode == "live"

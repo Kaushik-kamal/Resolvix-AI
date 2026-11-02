@@ -1,0 +1,44 @@
+{"text": "AKGEC kab shuru hua tha?", "lang": "hinglish", "expected_kb_ids": ["GEN-001"], "must_contain": ["1998"]}
+{"text": "When was the college established?", "lang": "en", "expected_kb_ids": ["GEN-001"], "must_contain": ["1998"]}
+{"text": "college ki sthapna kis saal mein hui?", "lang": "hinglish", "expected_kb_ids": ["GEN-001"], "must_contain": ["1998"]}
+{"text": "Which courses does AKGEC offer?", "lang": "en", "expected_kb_ids": ["GEN-002"], "must_contain": ["B.Tech", "MCA"]}
+{"text": "college mein kaun kaun se courses hote hain?", "lang": "hinglish", "expected_kb_ids": ["GEN-002"], "must_contain": ["B.Tech"]}
+{"text": "Is MCA available here?", "lang": "en", "expected_kb_ids": ["GEN-002"], "must_contain": ["MCA"]}
+{"text": "Which M.Tech branches are available?", "lang": "en", "expected_kb_ids": ["GEN-003"], "must_contain": ["M.Tech"]}
+{"text": "M.Tech mein kaun si branches hain?", "lang": "hinglish", "expected_kb_ids": ["GEN-003"], "must_contain": ["M.Tech"]}
+{"text": "Does the campus have wifi?", "lang": "en", "expected_kb_ids": ["GEN-004"], "must_contain": ["1400"]}
+{"text": "campus mein wifi hai kya aur kitne computers hain?", "lang": "hinglish", "expected_kb_ids": ["GEN-004"], "must_contain": ["1400"]}
+{"text": "How many books does the central library have?", "lang": "en", "expected_kb_ids": ["GEN-005"], "must_contain": ["1,00,000"]}
+{"text": "library mein kitni books hain?", "lang": "hinglish", "expected_kb_ids": ["GEN-005"], "must_contain": ["1,00,000"]}
+{"text": "Who is allowed to use the library?", "lang": "en", "expected_kb_ids": ["GEN-006"], "must_contain": ["membership"]}
+{"text": "library membership kaise milti hai?", "lang": "hinglish", "expected_kb_ids": ["GEN-006"], "must_contain": ["membership"]}
+{"text": "How do I enter the central library?", "lang": "en", "expected_kb_ids": ["GEN-007"], "must_contain": ["identity card"]}
+{"text": "library mein entry kaise hoti hai?", "lang": "hinglish", "expected_kb_ids": ["GEN-007"], "must_contain": ["identity card"]}
+{"text": "Does the library have DELNET?", "lang": "en", "expected_kb_ids": ["GEN-008"], "must_contain": ["DELNET"]}
+{"text": "digital library ya e-resources milte hain kya?", "lang": "hinglish", "expected_kb_ids": ["GEN-008"], "must_contain": ["DELNET"]}
+{"text": "Is there a question paper bank in the library?", "lang": "en", "expected_kb_ids": ["GEN-009"], "must_contain": ["question papers"]}
+{"text": "previous year question papers library mein milte hain kya?", "lang": "hinglish", "expected_kb_ids": ["GEN-009"], "must_contain": ["question papers"]}
+{"text": "Do the hostels have their own libraries?", "lang": "en", "expected_kb_ids": ["GEN-010"], "must_contain": ["hostel"]}
+{"text": "hostel library hai kya, aur department library kaun chalata hai?", "lang": "hinglish", "expected_kb_ids": ["GEN-010"], "must_contain": ["hostel"]}
+{"text": "How many hostels are there and how many students can stay?", "lang": "en", "expected_kb_ids": ["HST-001"], "must_contain": ["1500"]}
+{"text": "kitne hostel hain college mein?", "lang": "hinglish", "expected_kb_ids": ["HST-001"], "must_contain": ["1500"]}
+{"text": "Is hot water available in the hostel?", "lang": "en", "expected_kb_ids": ["HST-002"], "must_contain": ["solar"]}
+{"text": "hostel mein garam pani milta hai kya?", "lang": "hinglish", "expected_kb_ids": ["HST-002"], "must_contain": ["solar"]}
+{"text": "How can new students pay the fee?", "lang": "en", "expected_kb_ids": ["FEE-001"], "must_contain": ["demand draft"]}
+{"text": "fees kaise bharni hai?", "lang": "hinglish", "expected_kb_ids": ["FEE-001"], "must_contain": ["demand draft"]}
+{"text": "What should I write behind the demand draft?", "lang": "en", "expected_kb_ids": ["FEE-002"], "must_contain": ["mobile number"]}
+{"text": "DD ke peeche kya likhna hai?", "lang": "hinglish", "expected_kb_ids": ["FEE-002"], "must_contain": ["mobile number"]}
+{"text": "Is the amount paid at counselling adjusted in the fee?", "lang": "en", "expected_kb_ids": ["FEE-003"], "must_contain": ["counselling"]}
+{"text": "counselling mein jo paisa diya wo fees mein adjust hoga kya?", "lang": "hinglish", "expected_kb_ids": ["FEE-003"], "must_contain": ["counselling"]}
+{"text": "Can the fee structure change?", "lang": "en", "expected_kb_ids": ["FEE-004"], "must_contain": ["fee fixation"]}
+{"text": "fees badal sakti hai kya?", "lang": "hinglish", "expected_kb_ids": ["FEE-004"], "must_contain": ["fee fixation"]}
+{"text": "What does the medical charge cover?", "lang": "en", "expected_kb_ids": ["FEE-005"], "must_contain": ["50,000", "1,00,000"]}
+{"text": "medical insurance kitne tak ka milta hai?", "lang": "hinglish", "expected_kb_ids": ["FEE-005"], "must_contain": ["50,000"]}
+{"text": "Do I pay the exam fee to the college?", "lang": "en", "expected_kb_ids": ["FEE-006"], "must_contain": ["university"]}
+{"text": "exam fee kisko deni hoti hai?", "lang": "hinglish", "expected_kb_ids": ["FEE-006"], "must_contain": ["university"]}
+{"text": "Is caution money refundable?", "lang": "en", "expected_kb_ids": ["FEE-007"], "must_contain": ["5000"]}
+{"text": "caution money wapas milta hai kya?", "lang": "hinglish", "expected_kb_ids": ["FEE-007"], "must_contain": ["5000"]}
+{"text": "How are admissions done?", "lang": "en", "expected_kb_ids": ["ADM-001"], "must_contain": ["UPTAC"]}
+{"text": "UPTAC counselling se admission hota hai kya?", "lang": "hinglish", "expected_kb_ids": ["ADM-001"], "must_contain": ["UPTAC"]}
+{"text": "Who is the director of AKGEC?", "lang": "en", "expected_kb_ids": ["GEN-011"], "must_contain": ["Ahuja"]}
+{"text": "director kaun hain college ke?", "lang": "hinglish", "expected_kb_ids": ["GEN-011"], "must_contain": ["Ahuja"]}

@@ -102,9 +102,30 @@ def cmd_chat(args) -> int:
 
 # ------------------------------------------------------------------ eval
 def cmd_eval(args) -> int:
-    from .evaluation import run_eval
+    import tempfile
+    from pathlib import Path
 
-    sc = asyncio.run(run_eval(_settings(args), args.set))
+    from .evaluation import EVAL_DIR, run_eval
+    from .settings import BRAIN_DIR
+
+    s, set_dir, which = _settings(args), None, args.set
+    with tempfile.TemporaryDirectory() as tmp:
+        if args.kb_set == "akgec-draft":
+            # Evaluate the DRAFT AKGEC knowledge base (brain/data/kb.jsonl) with its own question sets (eval/akgec/).
+            # The Brain only serves approved entries, so a temporary copy marked approved is built for this run only;
+            # brain/data/kb.jsonl is never modified, nothing is approved or published.
+            src = BRAIN_DIR / "data" / "kb.jsonl"
+            rows = [json.loads(l) for l in src.read_text(encoding="utf-8").splitlines() if l.strip()]
+            for r in rows:
+                r["status"] = "approved"
+            copy = Path(tmp) / "kb_eval_only.jsonl"
+            copy.write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in rows) + "\n", encoding="utf-8")
+            s = dataclasses.replace(s, kb_source=f"file:{copy}")
+            set_dir = EVAL_DIR / "akgec"
+            if which == "all":
+                which = "answerable,abstain"        # the other sets do not depend on the KB: run them without --kb-set
+            print("NOTE: evaluating the DRAFT AKGEC KB (temporary approved copy, evaluation only; staff have approved nothing)")
+        sc = asyncio.run(run_eval(s, which, set_dir))
     print(json.dumps(sc.to_json(), indent=2) if args.json else sc.render())
     return sc.exit_code()
 
@@ -220,6 +241,8 @@ def main(argv: list[str] | None = None) -> int:
     e = sub.add_parser("eval", parents=[common], help="run the eval sets and print a scorecard")
     e.add_argument("--set", default="all", help="all | comma list of answerable,abstain,urgency,safety,human,robustness")
     e.add_argument("--json", action="store_true")
+    e.add_argument("--kb-set", choices=["sample", "akgec-draft"], default="sample",
+                   help="sample = contracts/kb/sample_kb.jsonl with eval/*.jsonl (default); akgec-draft = data/kb.jsonl (drafts) with eval/akgec/*.jsonl")
     e.set_defaults(fn=cmd_eval)
 
     b = sub.add_parser("bench", parents=[common], help="latency / cache benchmark (Spike S2 when LLM_MODE=live)")

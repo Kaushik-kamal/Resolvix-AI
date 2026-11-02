@@ -12,7 +12,7 @@ The entries were built using `scripts/ingest_raw.py` from manually curated rows 
 - Tested 18 unanswerable or off-topic questions, including "hostel fee kitni hai", "library timings", "director ka phone number", and "bus kab chalti hai". **Zero** were answered from the FAQ cache; all followed the escalation path.
 - 6 of 10 paraphrase probes were answered from the cache. The other 4 misses went only to the mock LLM, which cannot establish live answer quality.
 - **Live Groq has not yet been run**, so answer quality on this KB remains unmeasured.
-- `brain/eval/*.jsonl` still describes the 12-entry sample KB and has not yet been rewritten for these 21 entries.
+- Eval sets for these 21 entries now exist in `brain/eval/akgec/` (44 answerable questions covering every entry in English and romanised Hindi, 24 must-abstain questions including fee, timing and transport questions). Run them with `python -m resolvix_brain eval --mock --kb-set akgec-draft`: this evaluates a temporary copy of `kb.jsonl` marked approved for that run only; nothing is approved or published. In mock mode the result is a retrieval proxy (the right entry is in the top 3 for 44/44, the FAQ cache answered 10 to 12 of 44 depending on the embedder, 0 of 24 must-abstain questions got a FAQ answer). It is not an answer-quality score. The older `brain/eval/*.jsonl` files still describe the 12-entry sample KB.
 
 ## Human verification required before approval
 
@@ -52,7 +52,7 @@ Before production use:
 1. Verify all source information and time-sensitive details.
 2. Add appropriate `valid_until` dates wherever information is time-bound.
 3. Obtain native Hindi review for Hindi answers.
-4. Rewrite `brain/eval/*.jsonl` for the actual 21-entry dataset.
+4. Re-measure with live Groq on `eval/akgec/` and re-write the sets whenever entries change.
 5. Run live Groq evaluation and measure answer quality and latency.
 6. Confirm that only staff-approved entries are published.
 
