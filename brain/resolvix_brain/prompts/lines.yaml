@@ -1,0 +1,163 @@
+# Fixed spoken lines. Three variants per key:
+#   en   = English
+#   hi   = romanised Hindi / Hinglish (matches the contract fixtures and the sample KB, which is romanised)
+#   deva = Devanagari Hindi, used only when the caller's own text is in Devanagari. NOT reviewed by a native
+#          speaker yet: have a staff member read these before production.
+# <token> placeholders are filled by the brain; {{ticket_id}} is the contract placeholder (substituted by Member A).
+greeting:
+  hi: "Namaste, AKGEC helpline mein aapka swagat hai. Main AI sahayak hoon aur yeh call record ho sakti hai. Aap Hindi ya English mein baat kar sakte hain. Main aapki kaise madad kar sakta hoon?"
+  en: "Hello, welcome to the AKGEC helpline. I am an AI assistant and this call may be recorded. You can speak in Hindi or English. How can I help you?"
+  deva: "नमस्ते, AKGEC हेल्पलाइन में आपका स्वागत है। मैं AI सहायक हूँ और यह कॉल रिकॉर्ड हो सकती है। आप हिंदी या अंग्रेज़ी में बात कर सकते हैं। मैं आपकी कैसे मदद कर सकता हूँ?"
+greeting_bilingual: "Namaste, AKGEC helpline mein aapka swagat hai. Main AI sahayak hoon aur yeh call record ho sakti hai. Hello, this is the AKGEC helpline AI assistant; you can speak in Hindi or English. Main aapki kaise madad kar sakta hoon?"
+
+emergency:
+  hi: "Main aapko turant college ke emergency contact se jod raha hoon. Agar jaan ka khatra hai to <numbers> par bhi call karein."
+  en: "I am connecting you to the college emergency contact right now. If life is in danger, please also call <numbers>."
+  deva: "मैं आपको तुरंत कॉलेज के इमरजेंसी संपर्क से जोड़ रहा हूँ। अगर जान का खतरा है तो <numbers> पर भी कॉल करें।"
+
+urgent_ask_both:
+  hi: "Ye urgent hai, main abhi madad karta hoon. Aapka roll number aur kaunsa paper hai, batayiye."
+  en: "This is urgent, I will help right away. Please tell me your roll number and which paper it is."
+  deva: "यह ज़रूरी है, मैं अभी मदद करता हूँ। आपका रोल नंबर और कौन सा पेपर है, बताइए।"
+urgent_ask_roll:
+  hi: "Ye urgent hai. Kripya apna roll number batayiye."
+  en: "This is urgent. Please tell me your roll number."
+  deva: "यह ज़रूरी है। कृपया अपना रोल नंबर बताइए।"
+urgent_ask_paper:
+  hi: "Kaunsa paper hai, uska naam batayiye."
+  en: "Which paper is it? Please tell me its name."
+  deva: "कौन सा पेपर है, उसका नाम बताइए।"
+urgent_connect:
+  hi: "Ye urgent hai. Maine <dept> ke liye ticket {{ticket_id}} bana diya hai aur abhi aapko unse jod raha hoon. Line par bane rahiye."
+  en: "This is urgent. I have raised ticket {{ticket_id}} for <dept> and I am connecting you to them now. Please stay on the line."
+  deva: "यह ज़रूरी है। मैंने <dept> के लिए टिकट {{ticket_id}} बना दिया है और अभी आपको उनसे जोड़ रहा हूँ। लाइन पर बने रहिए।"
+urgent_callback:
+  hi: "Ye urgent hai. Maine <dept> ke liye ticket {{ticket_id}} bana diya hai. Office abhi band hai, isliye office khulte hi staff aapko call karega."
+  en: "This is urgent. I have raised ticket {{ticket_id}} for <dept>. The office is closed right now, so staff will call you as soon as it opens."
+  deva: "यह ज़रूरी है। मैंने <dept> के लिए टिकट {{ticket_id}} बना दिया है। ऑफिस अभी बंद है, इसलिए खुलते ही स्टाफ आपको कॉल करेगा।"
+
+human_connect:
+  hi: "Bilkul. Maine ticket {{ticket_id}} bana diya hai aur aapko <dept> se jod raha hoon."
+  en: "Certainly. I have raised ticket {{ticket_id}} and I am connecting you to <dept>."
+  deva: "बिल्कुल। मैंने टिकट {{ticket_id}} बना दिया है और आपको <dept> से जोड़ रहा हूँ।"
+human_callback:
+  hi: "Bilkul. Maine ticket {{ticket_id}} bana diya hai. <dept> abhi band hai, office khulte hi staff aapko call karega."
+  en: "Certainly. I have raised ticket {{ticket_id}}. <dept> is closed right now, so staff will call you when it opens."
+  deva: "बिल्कुल। मैंने टिकट {{ticket_id}} बना दिया है। <dept> अभी बंद है, खुलते ही स्टाफ आपको कॉल करेगा।"
+sms_sent:
+  hi: "SMS bhi bhej diya hai."
+  en: "I have also sent you an SMS."
+  deva: "SMS भी भेज दिया है।"
+
+unknown_offer:
+  hi: "Is baare mein mere paas pakki jaankari nahi hai. Kya main ticket bana doon taaki <dept> aapko call kare? Isi number par call karein?"
+  en: "I do not have verified information about that. Shall I raise a ticket so that <dept> can call you back on this same number?"
+  deva: "इस बारे में मेरे पास पक्की जानकारी नहीं है। क्या मैं टिकट बना दूँ ताकि <dept> आपको कॉल करे? इसी नंबर पर कॉल करें?"
+unknown_offer_ask_number:
+  hi: "Is baare mein mere paas pakki jaankari nahi hai. Kya main ticket bana doon taaki <dept> aapko call kare? Aapka mobile number kya hai?"
+  en: "I do not have verified information about that. Shall I raise a ticket so that <dept> can call you back? What is your mobile number?"
+  deva: "इस बारे में मेरे पास पक्की जानकारी नहीं है। क्या मैं टिकट बना दूँ ताकि <dept> आपको कॉल करे? आपका मोबाइल नंबर क्या है?"
+ask_number:
+  hi: "Aapka mobile number kya hai?"
+  en: "What is your mobile number?"
+  deva: "आपका मोबाइल नंबर क्या है?"
+unknown_done:
+  hi: "Theek hai, maine ticket bana diya hai. Aapka ticket number hai {{ticket_id}}. <dept> aapko isi number par call karega."
+  en: "Alright, I have raised a ticket. Your ticket number is {{ticket_id}}. <dept> will call you back on this number."
+  deva: "ठीक है, मैंने टिकट बना दिया है। आपका टिकट नंबर {{ticket_id}} है। <dept> आपको इसी नंबर पर कॉल करेगा।"
+unknown_done_nosms:
+  hi: "Theek hai, maine ticket bana diya hai. Aapka ticket number hai {{ticket_id}}. <dept> aapko call karega."
+  en: "Alright, I have raised a ticket. Your ticket number is {{ticket_id}}. <dept> will contact you."
+  deva: "ठीक है, मैंने टिकट बना दिया है। आपका टिकट नंबर {{ticket_id}} है। <dept> आपसे संपर्क करेगा।"
+unknown_declined:
+  hi: "Theek hai, maine aapka sawaal note kar liya hai taaki hum ye jaankari jod sakein. Kuch aur madad chahiye?"
+  en: "Alright, I have noted your question so that we can add this information. Is there anything else I can help with?"
+  deva: "ठीक है, मैंने आपका सवाल नोट कर लिया है ताकि हम यह जानकारी जोड़ सकें। कुछ और मदद चाहिए?"
+human_offer:
+  hi: "Lagta hai main is mamle mein aapki poori madad nahi kar pa raha. Kya main aapko staff se jod doon?"
+  en: "It looks like I cannot fully help with this. Shall I connect you to the staff?"
+  deva: "लगता है मैं इस मामले में आपकी पूरी मदद नहीं कर पा रहा। क्या मैं आपको स्टाफ से जोड़ दूँ?"
+human_offer_declined:
+  hi: "Theek hai. Kuch aur madad chahiye?"
+  en: "Alright. Is there anything else I can help with?"
+  deva: "ठीक है। कुछ और मदद चाहिए?"
+personal_decline:
+  hi: "Main sirf public jaankari de sakta hoon, personal record nahi dekh sakta. Kya main aapko <dept> se jod doon?"
+  en: "I can only share public information and cannot see personal records. Shall I connect you to <dept>?"
+  deva: "मैं सिर्फ़ सार्वजनिक जानकारी दे सकता हूँ, व्यक्तिगत रिकॉर्ड नहीं देख सकता। क्या मैं आपको <dept> से जोड़ दूँ?"
+
+complaint_ask:
+  hi: "Zaroor, main aapki complaint darj karta hoon. Kahan ki problem hai, hostel block aur room number bataiye."
+  en: "Of course, I will register your complaint. Where is the problem? Please tell me the block and room number."
+  deva: "ज़रूर, मैं आपकी शिकायत दर्ज करता हूँ। समस्या कहाँ की है? ब्लॉक और रूम नंबर बताइए।"
+complaint_ask_what:
+  hi: "Zaroor, main complaint darj karta hoon. Kis cheez ki aur kahan ki problem hai? Thoda detail mein batayiye."
+  en: "Of course, I will register it. What is the problem and where is it? Please give a little detail."
+  deva: "ज़रूर, मैं शिकायत दर्ज करता हूँ। किस चीज़ की और कहाँ की समस्या है? थोड़ा विस्तार से बताइए।"
+complaint_confirm_number:
+  hi: "Staff aapko jis number par call karega, uske aakhri chaar ank <last4> hain. Kya ye sahi hai?"
+  en: "Staff will call you on the number ending in <last4>. Is that correct?"
+  deva: "स्टाफ जिस नंबर पर कॉल करेगा, उसके आखिरी चार अंक <last4> हैं। क्या यह सही है?"
+complaint_readback:
+  hi: "Main darj kar raha hoon: <summary>. Kya ye sahi hai?"
+  en: "I am registering this: <summary>. Is that correct?"
+  deva: "मैं दर्ज कर रहा हूँ: <summary>। क्या यह सही है?"
+complaint_fix:
+  hi: "Theek hai, kya galat hai? Sahi detail batayiye."
+  en: "Alright, what is wrong? Please give me the correct detail."
+  deva: "ठीक है, क्या गलत है? सही जानकारी बताइए।"
+complaint_done:
+  hi: "Aapki complaint darj ho gayi hai. Ticket number {{ticket_id}}."
+  en: "Your complaint has been registered. Ticket number {{ticket_id}}."
+  deva: "आपकी शिकायत दर्ज हो गई है। टिकट नंबर {{ticket_id}}।"
+yes_no_reprompt:
+  hi: "Maaf kijiye, kripya haan ya nahi bataiye."
+  en: "Sorry, please say yes or no."
+  deva: "माफ़ कीजिए, कृपया हाँ या नहीं बताइए।"
+
+unclear_first:
+  hi: "Maaf kijiye, phir se boliye?"
+  en: "Sorry, could you repeat that?"
+  deva: "माफ़ कीजिए, फिर से बोलिए?"
+unclear_second:
+  hi: "Mujhe samajhne mein dikkat ho rahi hai. Kya main aapko staff se jod doon ya ticket bana doon?"
+  en: "I am having trouble understanding. Shall I connect you to the staff or raise a ticket?"
+  deva: "मुझे समझने में दिक्कत हो रही है। क्या मैं आपको स्टाफ से जोड़ दूँ या टिकट बना दूँ?"
+
+fallback:
+  hi: "Maaf kijiye, abhi thodi dikkat hai. Maine aapki call note kar li hai, ticket number {{ticket_id}}. Aapko call back kiya jayega."
+  en: "Sorry, we are having a technical problem. I have noted your call, ticket number {{ticket_id}}. You will receive a call back."
+  deva: "माफ़ कीजिए, अभी कुछ तकनीकी दिक्कत है। मैंने आपकी कॉल नोट कर ली है, टिकट नंबर {{ticket_id}}। आपको कॉल बैक किया जाएगा।"
+
+source_mention:
+  hi: "Ye <source> mein diya hai."
+  en: "This is from <source>."
+  deva: "यह <source> में दिया गया है।"
+anything_else:
+  hi: "Kuch aur poochna hai?"
+  en: "Anything else I can help with?"
+  deva: "कुछ और पूछना है?"
+partial_offer:
+  hi: "Kya main aapko <dept> se jod doon?"
+  en: "Shall I connect you to <dept>?"
+  deva: "क्या मैं आपको <dept> से जोड़ दूँ?"
+go_ahead:
+  hi: "Ji boliye, main sun raha hoon."
+  en: "Please go ahead, I am listening."
+  deva: "जी बोलिए, मैं सुन रहा हूँ।"
+goodbye:
+  hi: "Dhanyavaad, AKGEC helpline ko call karne ke liye. Namaste."
+  en: "Thank you for calling the AKGEC helpline. Goodbye."
+  deva: "AKGEC हेल्पलाइन को कॉल करने के लिए धन्यवाद। नमस्ते।"
+chitchat_greeting:
+  hi: "Namaste! Main aapki kya madad kar sakta hoon?"
+  en: "Hello! How can I help you?"
+  deva: "नमस्ते! मैं आपकी क्या मदद कर सकता हूँ?"
+chitchat_thanks:
+  hi: "Aapka swagat hai. Kuch aur madad chahiye?"
+  en: "You are welcome. Is there anything else I can help with?"
+  deva: "आपका स्वागत है। कुछ और मदद चाहिए?"
+callback_done:
+  hi: "Theek hai, maine ticket {{ticket_id}} bana diya hai. <dept> aapko call karega."
+  en: "Alright, I have raised ticket {{ticket_id}}. <dept> will call you back."
+  deva: "ठीक है, मैंने टिकट {{ticket_id}} बना दिया है। <dept> आपको कॉल करेगा।"

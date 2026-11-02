@@ -1,0 +1,13 @@
+{
+  "kb_version": "6f4da57b0bf8",
+  "entry_count": 10,
+  "faq_count": 5,
+  "token_count": 2707,
+  "activated_at": "2026-11-01T18:50:39.657253+05:30",
+  "warnings": [
+    "excluded 1 entry (expired (valid_until 2026-01-01)): FEE-002",
+    "excluded 1 entry (status=draft): FEE-003",
+    "excluded 1 entry (prompt-injection pattern ignore-instructions): FEE-099",
+    "degraded embedder in use (lexical)"
+  ]
+}

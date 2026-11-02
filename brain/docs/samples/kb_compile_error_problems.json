@@ -1,0 +1,7 @@
+{
+  "problems": [
+    "kb_bad_example.jsonl line 1: id: String should match pattern '^[A-Z]{2,4}-\\d{3,4}$'; question_variants: Field required; answer_en: Field required; source_title: Field required",
+    "kb_bad_example.jsonl line 2: Expecting value: line 1 column 1 (char 0)"
+  ],
+  "http_mapping": "422 ErrorEnvelope{code:validation_error, details:{problems...}}"
+}

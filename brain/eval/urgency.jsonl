@@ -1,0 +1,10 @@
+{"turns": ["Exam 15 minute mein hai, room nahi mil raha!", "Roll number 2400271549999, paper Data Structures."], "expected_priority": "P1", "expected_rule_id": "R-EXAM-60", "expected_department": "exam_cell"}
+{"turns": ["My exam starts in 30 minutes and I cannot find my exam hall", "roll number 2400271549999 paper Maths"], "expected_priority": "P1", "expected_rule_id": "R-EXAM-60", "expected_department": "exam_cell"}
+{"turns": ["exam 60 minute mein hai aur seating nahi mil rahi, roll number 2400271549998 paper physics"], "expected_priority": "P1", "expected_rule_id": "R-EXAM-60", "expected_department": "exam_cell"}
+{"turns": ["exam 90 minute mein hai aur room nahi mil raha"], "expected_priority": "P3", "expected_rule_id": "R-UNANSWERED", "expected_department": "exam_cell"}
+{"turns": ["fees ki last date 2 ghante mein hai aur portal nahi khul raha", "roll number 2400271549997"], "expected_priority": "P2", "expected_rule_id": "R-DEADLINE-24H", "expected_department": "accounts"}
+{"turns": ["admit card nahi mil raha aur exam 3 ghante mein hai", "roll number 2400271549996"], "expected_priority": "P2", "expected_rule_id": "R-DEADLINE-24H", "expected_department": "exam_cell"}
+{"turns": ["Hostel ka wifi do din se nahi chal raha"], "expected_priority": "P3", "expected_rule_id": "R-COMPLAINT", "expected_department": "hostel"}
+{"turns": ["mujhe kisi insaan se baat karni hai"], "expected_priority": "P3", "expected_rule_id": "R-HUMAN", "expected_department": "helpdesk"}
+{"turns": ["Hostel mein ek ladka behosh ho gaya hai"], "expected_priority": "P1", "expected_rule_id": "R-SAFETY", "expected_department": "emergency"}
+{"turns": ["hostel gate timing"], "expected_priority": "P4", "expected_rule_id": null, "expected_department": null}
