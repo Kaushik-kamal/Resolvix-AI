@@ -16,7 +16,7 @@ Brain itself has never talked to the real Groq API.
 
 | Area | State |
 |---|---|
-| Brain library (pipeline, KB compiler, retrieval, safety, urgency, flows, validators, LLM client) | Complete; 493 tests (483 offline + 10 real-model) |
+| Brain library (pipeline, KB compiler, retrieval, safety, urgency, flows, validators, LLM client) | Complete; 498 tests (488 offline + 10 real-model) |
 | Frozen contract v1.0.0 | Unchanged; 6 contract tests pass (need `PYTHONUTF8=1` on Windows) |
 | Nine fixture scenarios | Reproduced structurally (10 tests incl. the emergency-alert check) |
 | Clean-venv install | Verified today against the current code |
@@ -33,8 +33,8 @@ brain\.venv\Scripts\Activate.ps1
 $env:PYTHONUTF8 = "1"
 pytest contracts/tests -q                                   # 6 passed
 cd brain
-pytest -q                                                   # 493 passed (483 offline + 10 real-model)
-pytest -q -m "not realembed"                                # 317 passed, 10 deselected (offline subset)
+pytest -q                                                   # 498 passed (488 offline + 10 real-model)
+pytest -q -m "not realembed"                                # 488 passed, 10 deselected (offline subset)
 pytest -q -m realembed                                      # 10 passed (loads multilingual-e5-small)
 pytest -m mocked_integration -q                             # 19 passed
 python -m resolvix_brain eval --mock                        # exit code 2 = deterministic targets met, LLM ones not verified
@@ -71,8 +71,7 @@ set `$env:PYTHONUTF8 = "1"`.
 
 | Finding | Resolution |
 |---|---|
-| Test count differed between messages (296 / 304 / "300+") | explained above; the count on 2026-11-02 is 493 = 483 offline (`-m "not realembed"`, measured after the last code change) + 10 real-model tests (`-m realembed`; 10 passed on this branch before the turn-rollback change and not re-run after it, which touches no embedding path); subsets such as `-m mocked_integration` are part of the 483, not additional |
-| **Expired KB entries kept being served after midnight** until someone published | **fixed**: expiry re-checked at answer time (FAQ hit and LLM citation), plus an automatic background recompile on the first turn of a new day (`brain.py::_maybe_refresh`, 4 tests). Small targeted change; no module rewritten |
+| Test count differed between messages (296 / 304 / "300+") | explained above; the count measured on 2026-11-02 is 498 = 488 offline (`-m "not realembed"`) + 10 real-model tests (`-m realembed`), run as separate selections with no overlap; subsets such as `-m mocked_integration` are part of the 488, not additional | **Expired KB entries kept being served after midnight** until someone published | **fixed**: expiry re-checked at answer time (FAQ hit and LLM citation), plus an automatic background recompile on the first turn of a new day (`brain.py::_maybe_refresh`, 4 tests). Small targeted change; no module rewritten |
 | SMS idempotency key (frozen helper) suppresses the second `ticket_created` SMS of a call | handled Brain-side per call (`Session.sms_requested`, no contract change); see CR-7 and `tests/test_sms_dedup.py` |
 | Runtime cancellation can lose an action the Brain already delivered | not a Brain bug; documented as CR-8 and demonstrated in the reference runtime (shield + `aclose`) |
 | Devanagari queries rarely clear the FAQ threshold (1 of 6) although the right entry ranks first (6 of 6) | measured, not fixed: they fall through to the LLM. Needs real ASR transcripts to tune (section 6) |
@@ -185,4 +184,4 @@ Done in this package only (nothing in Member C's or Member A's files; nothing co
 - `KB_EXPORT_SERVICE_KEY` added (CR-9): fixes the HTTP 401 on `/v1/kb/export`. 10 new tests against a real local HTTP server (valid, missing, invalid, 403, redirect, logging, settings repr, file sources, failed reload keeps the old KB).
 - Complaint flow investigated with a real ops-api: the earlier "incomplete" script was my script's turn order (the flow works as designed), but the trace exposed a real bug (a place-name correction was dropped); fixed with 2 tests.
 - Ticket events: the reference runtime now stamps `at` (frozen `TicketEvent` requires it, ops-api returns 422 without it); the mocked ops validates every event with the frozen model.
-- Test totals (2026-11-02): 493 Brain tests = 483 offline + 10 real-model (separate selections, no overlap), plus 6 contract tests. The offline and contract figures are from the final run; the real-model figure is from the earlier run noted above.
+- Test totals (measured 2026-11-02, same run session): 498 Brain tests = 488 offline passed + 10 real-model passed (separate selections, no overlap, 0 failed, 0 skipped), plus 6 contract tests.

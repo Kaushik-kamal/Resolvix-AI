@@ -5,7 +5,7 @@ answers only from the approved knowledge base, never speaks a figure that is not
 deterministic rule table (the LLM only extracts facts), and creates a ticket before any transfer. It does no I/O except the
 LLM and the local embedding model: no HTTP server, database, Agora, SMS or UI (those belong to Members A and C).
 
-Status: implemented and tested against the frozen contract v1.0.0 (493 tests: 483 offline + 10 that load the real embedding model, counted separately).
+Status: implemented and tested against the frozen contract v1.0.0 (498 tests: 488 offline + 10 that load the real embedding model, counted separately).
 Start with `docs/MEMBER_B_HANDOFF.md`; integration guides for Members A and C are in `docs/INTEGRATION_EXAMPLES.md`, the test plan in
 `docs/INTEGRATION_TEST_PLAN.md`. Nothing outside the Brain (runtime, ops-api, dashboard, Agora, live Groq) has been exercised. **Not yet exercised against the live Groq API** (no key was
 available): see "Known limitations".
@@ -19,9 +19,10 @@ pip install -e contracts/python -e "brain[dev]"
 $env:PYTHONUTF8 = "1"                       # the frozen contract test reads UTF-8 files without saying so (see docs/CONTRACT_CHANGE_REQUEST.md CR-1)
 pytest contracts/tests -q                   # must be green first (6 tests)
 cd brain
-pytest -q                                   # 493 tests (483 offline + 10 real-model); the first run downloads the e5 model (~470 MB, one time)
+pytest -q                                   # 498 tests (488 offline + 10 real-model); the first run downloads the e5 model (~470 MB, one time)
 pytest -q -m "not realembed"                # offline-only subset (no model download)
 python -m resolvix_brain eval --mock        # scorecard (exit code 2 = deterministic targets met, LLM ones not verified)
+python -m resolvix_brain eval --mock --kb-set akgec-draft   # the 21-entry DRAFT AKGEC KB with eval/akgec/ (temporary approved copy, evaluation only)
 python -m resolvix_brain chat --mock        # interactive REPL, prints each event as JSON plus the spoken text
 ```
 
@@ -116,7 +117,7 @@ starting points to calibrate on the real dataset.
 - **Live Groq never exercised**: request shape (`max_tokens`, `reasoning_effort`, streaming usage fields), real
   time-to-first-token, `cached_tokens` and answer quality are untested. Spike S2 and the answerable/abstain targets are open
   (`docs/LATENCY.md`).
-- Real AKGEC dataset not provided: `data/kb.jsonl` was not generated; no real-data evaluation.
+- AKGEC data: `data/kb.jsonl` holds 21 **draft** entries from a website scrape (see `data/DATASET_NOTES.md`); none is approved, so the Brain does not serve them yet. Fee tables, timings, transport, exam dates and phone numbers are missing. Live-LLM evaluation on them has not been run (no Groq key).
 - FAQ margin between true matches and near-misses is narrow on a tiny KB (0.871 vs 0.906); recalibrate on real data.
 - Hindi number words above ~50 (except tens) are not understood by the grounding check; Devanagari reply lines are not
   native-reviewed; barge-in cancellation is tested with generators/tasks, not with Member A's runtime.

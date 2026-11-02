@@ -48,3 +48,15 @@ model/budget from them. Fallbacks if caching fails (PRD): smaller budget, `gpt-o
   no-fabrication guarantee). Retry on the fallback model only happens if the first attempt failed within 1.5 s.
 - Safety, human-request, urgent pre-check, chit-chat and FAQ-hit turns never call the LLM.
 - The first request after a KB reload pays the cache-miss cost unless the warm-up call (`WARMUP_ON_RELOAD`) succeeded.
+
+## AKGEC draft KB (21 entries, 4,418 prompt tokens): live Groq status (2026-11-02)
+**NOT RUN, blocked: no `GROQ_API_KEY` exists on this machine** (not in the environment, not in a `.env`). No latency, cache-hit or answer-quality number
+for this KB has been measured, and none is claimed. Only the offline results exist: compiles to 4,418 tokens (budget 90,000), and
+`python -m resolvix_brain eval --mock --kb-set akgec-draft` gives retrieval-proxy results (see `data/DATASET_NOTES.md`).
+To run it when a key is available (never commit the key):
+```powershell
+$env:GROQ_API_KEY = "<your key>"          # session only
+$env:LLM_MODE = "live"
+python -m resolvix_brain eval --kb-set akgec-draft      # end to end on the draft KB (temporary approved copy, evaluation only)
+python -m resolvix_brain bench                          # Spike S2 numbers (note: bench uses KB_SOURCE, the sample KB by default)
+```

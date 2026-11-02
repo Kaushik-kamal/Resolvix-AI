@@ -49,7 +49,7 @@ cd D:\hackathon\resolvix\team-package\resolvix\brain
 .venv\Scripts\Activate.ps1
 $env:PYTHONUTF8 = "1"
 pytest -m mocked_integration -v          # 19 tests, ~3 s, no network, no key
-pytest -q                                # everything: 493 tests (483 offline + 10 that load the real e5 model; the two selections do not overlap)
+pytest -q                                # everything: 498 tests (488 offline + 10 that load the real e5 model; the two selections do not overlap)
 ```
 
 ## 3. Genuine end-to-end plan (to be executed by Member A with B and C present)
