@@ -1,0 +1,239 @@
+from __future__ import annotations
+
+import asyncio
+from contextlib import asynccontextmanager
+from datetime import datetime, timezone
+import logging
+from pathlib import Path
+import uuid
+from typing import Any
+
+from fastapi import FastAPI, Header, HTTPException, Request, Response, status
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel, TypeAdapter
+
+from resolvix_contracts import CONTRACT_VERSION
+from resolvix_contracts.models import (
+    BrainEvent,
+    CallChannel,
+    CallContext,
+    CallStart,
+    DoneEvent,
+    ErrorBody,
+    ErrorEnvelope,
+    KBSource,
+    KBVersionInfo,
+    SpeechEvent,
+    TurnRequest,
+)
+from .agora_control import AgoraController
+from .brain_loader import get_brain
+from .config import RuntimeSettings
+from .executor import ActionExecutor
+from .ops_client import OpsClient
+from .sessions import SessionState, get_session_registry
+from .shim import init_shim_router
+from .telephony import get_telephony_adapter
+
+logger = logging.getLogger("resolvix_runtime")
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
+
+STATIC_DIR = Path(__file__).parent / "static"
+
+
+class TestTurnRequest(BaseModel):
+    call_id: str | None = None
+    text: str
+
+
+class TestTurnResponse(BaseModel):
+    call_id: str
+    events: list[dict[str, Any]]
+    spoken_text: str
+
+
+def create_app(settings: RuntimeSettings | None = None) -> FastAPI:
+    if settings is None:
+        settings = RuntimeSettings.from_env()
+
+    ops_client = OpsClient(settings)
+    agora_controller = AgoraController(settings, ops_client)
+
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        await ops_client.start()
+        brain = get_brain(settings)
+        if hasattr(brain, "ready"):
+            try:
+                await brain.ready()
+            except Exception as e:
+                logger.error("Brain ready() error: %s", e)
+        logger.info("Resolvix voice-runtime started on port %s", settings.port)
+        yield
+        if hasattr(brain, "aclose"):
+            try:
+                await brain.aclose()
+            except Exception:
+                pass
+        await ops_client.close()
+        logger.info("Resolvix voice-runtime shutdown complete.")
+
+    app = FastAPI(
+        title="Resolvix Voice Runtime (Member A)",
+        version=CONTRACT_VERSION,
+        lifespan=lifespan,
+    )
+
+    # 1. Mount OpenAI-compatible chat completions router
+    shim_router = init_shim_router(settings, ops_client)
+    app.include_router(shim_router)
+
+    # 2. Health check endpoint
+    @app.get("/healthz")
+    async def health():
+        brain = get_brain(settings)
+        ops_health = await ops_client.check_health()
+        agora_health = "mock" if settings.telephony_mode == "mock" or not settings.agora_app_id else "ok"
+        brain_h = brain.health()
+        overall_status = "ok" if brain_h.get("status") == "ok" and ops_health == "ok" else "degraded"
+
+        return {
+            "status": overall_status,
+            "brain": brain_h,
+            "ops_api": ops_health,
+            "agora": agora_health,
+            "contract_version": CONTRACT_VERSION,
+        }
+
+    # 3. Web session start (Agora tokens + AI agent join)
+    @app.post("/api/sessions/web")
+    async def sessions_web():
+        session_info = await agora_controller.start_web_session()
+        return session_info
+
+    # 4. Typed test turn endpoint (FR-A3)
+    @app.post("/api/test/turn", response_model=TestTurnResponse)
+    async def test_turn(payload: TestTurnRequest):
+        call_id = payload.call_id or f"call-test-{uuid.uuid4().hex[:8]}"
+        registry = get_session_registry()
+        session, is_new = registry.get_or_create(call_id=call_id, channel=CallChannel.test)
+
+        brain = get_brain(settings)
+        if is_new:
+            ctx = CallContext(
+                call_id=call_id,
+                channel=CallChannel.test,
+                caller_number=None,
+                started_at=session.started_at,
+            )
+            plan = await brain.start_call(ctx)
+            call_start = CallStart(
+                call_id=call_id,
+                channel=CallChannel.test,
+                caller_number=None,
+                started_at=session.started_at,
+                kb_version=plan.kb_version,
+                lang=plan.greeting_lang,
+            )
+            asyncio.create_task(ops_client.post_call_start(call_start))
+
+        turn_index = session.next_turn_index()
+        req = TurnRequest(
+            call_id=call_id,
+            turn_index=turn_index,
+            user_text=payload.text,
+            history=[],
+            dtmf=None,
+            received_at=datetime.now(timezone.utc),
+        )
+
+        telephony = get_telephony_adapter(settings)
+        executor = ActionExecutor(ops_client, telephony, settings, session)
+
+        substituted_events: list[dict[str, Any]] = []
+        spoken_pieces: list[str] = []
+        current_lang = "hinglish"
+
+        async for event in brain.handle_turn(req):
+            if event.type == "meta":
+                current_lang = event.lang.value if hasattr(event.lang, "value") else str(event.lang)
+                substituted_events.append(event.model_dump(mode="json"))
+
+            elif event.type == "action":
+                await executor.execute(event.action, lang=current_lang)
+                substituted_events.append(event.model_dump(mode="json"))
+
+                while executor.injected_speech:
+                    inj = executor.injected_speech.pop(0)
+                    spoken_pieces.append(inj)
+
+            elif event.type == "speech":
+                assert isinstance(event, SpeechEvent)
+                processed = executor.process_speech_text(event.text, lang=current_lang)
+                if processed:
+                    spoken_pieces.append(processed)
+                    substituted_events.append({"type": "speech", "text": processed})
+
+            elif event.type == "done":
+                assert isinstance(event, DoneEvent)
+                asyncio.create_task(ops_client.post_turn(call_id, event.summary))
+                substituted_events.append(event.model_dump(mode="json"))
+
+        return TestTurnResponse(
+            call_id=call_id,
+            events=substituted_events,
+            spoken_text=" ".join(spoken_pieces).strip(),
+        )
+
+    # 5. KB reload passthrough (FR-A1 / 4.6)
+    @app.post("/admin/kb/reload")
+    async def reload_kb(source: KBSource, x_service_key: str | None = Header(None)):
+        if not x_service_key or x_service_key.strip() != settings.service_key:
+            err = ErrorEnvelope(
+                error=ErrorBody(
+                    code="unauthorized",
+                    message="Missing or invalid X-Service-Key",
+                    retryable=False,
+                )
+            )
+            return JSONResponse(status_code=status.HTTP_401_UNAUTHORIZED, content=err.model_dump(mode="json"))
+
+        brain = get_brain(settings)
+        try:
+            info = await brain.reload_kb(source)
+            return info.model_dump(mode="json")
+        except Exception as e:
+            logger.error("KB reload compilation failed: %s", e)
+            err = ErrorEnvelope(
+                error=ErrorBody(
+                    code="validation_error",
+                    message=f"KB reload compilation failed: {e}",
+                    retryable=False,
+                    details={"error": str(e)},
+                )
+            )
+            return JSONResponse(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                content=err.model_dump(mode="json"),
+            )
+
+    # 6. Static page routes
+    @app.get("/test", response_class=HTMLResponse)
+    async def serve_test_page():
+        html_file = STATIC_DIR / "test.html"
+        return HTMLResponse(content=html_file.read_text(encoding="utf-8"))
+
+    @app.get("/call", response_class=HTMLResponse)
+    async def serve_call_page():
+        html_file = STATIC_DIR / "call.html"
+        return HTMLResponse(content=html_file.read_text(encoding="utf-8"))
+
+    @app.get("/", response_class=RedirectResponse)
+    async def root():
+        return RedirectResponse(url="/test")
+
+    return app
+
+
+app = create_app()
